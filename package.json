@@ -1,0 +1,15 @@
+{
+  "name": "1101-toy-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nohup node index.js &"
+  },
+  "author": "HsuanYu CHOU",
+  "license": "CC0-1.0",
+  "dependencies": {
+    "node-cron": "^3.0.0"
+  }
+}
