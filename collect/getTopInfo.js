@@ -1,5 +1,4 @@
-// const API = require("../src/Api.js");
-const API = require("../Jujuby/Prober/src/Api.js");
+const API = require("../../Jujuby/Prober/src/Api.js");
 const fs = require("fs");
 const path = require("path");
 

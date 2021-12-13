@@ -1,8 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
-// const { lookupDNSCache } = require("../Cache/DNSCache.js");
-const { lookupDNSCache } = require("../Jujuby/Prober/Cache/DNSCache.js");
+const { lookupDNSCache } = require("../../Jujuby/Prober/Cache/DNSCache.js");
 const {
   getAccessToken,
   getBestQualityPlaylistUri,
@@ -10,8 +9,7 @@ const {
   getMasterPlaylist,
   getPlaylistContent,
   parseMasterPlaylist,
-  // } = require("../getEdgeAddr.js");
-} = require("../Jujuby/Prober/Utils/getEdgeAddr.js");
+} = require("../../Jujuby/Prober/Utils/getEdgeAddr.js");
 const { getTopInfo } = require("./getTopInfo.js");
 
 const handleError = (err, content, filename = "error.err") => {
@@ -65,25 +63,42 @@ const get3IP = async (channels) => {
   const rightnow = new Date();
   const fileprenom = rightnow.getUTCDate() + "T" + rightnow.getUTCHours() + "_";
 
+  const t0 = new Date();
+
   for (let i = 0; i < channels.length; i++) {
     const filenom = fileprenom + channels[i] + ".csv";
     const filepath = path.join(process.cwd(), filenom);
 
-    const t1 = new Date().toISOString().substring(10);
+    const t1 = new Date().toISOString().substring(11);
     let ip = await getIP(channels[i]);
-    const t2 = new Date().toISOString().substring(10);
+    const t2 = new Date().toISOString().substring(11);
 
-    if (ip === "Request failed with status code 403") ip = "=403=";
-    else if (ip === "Request failed with status code 404") ip = "=404=";
+    if (ip === "Request failed with status code 403") ip = "!403!";
+    else if (ip === "Request failed with status code 404") ip = "!404!";
     try {
-      fs.appendFileSync(filepath, `${t1}, ${ip}, ${t2}\n`);
+      fs.appendFileSync(filepath, `"${t1}","${ip}","${t2}"\n`);
     } catch (err) {
       handleError(err, "Err at get3IP()->fs.appendFS()");
     }
   }
+
+  const tn = new Date();
+  if (t0.getSeconds() % 60 === 0) {
+    const dt = (tn - t0) / 1000;
+    const filename = `${new Date().toISOString().substring(0, 13)}dt.csv`;
+    const filepath = path.join(process.cwd(), filename);
+    try {
+      fs.appendFileSync(
+        filepath,
+        `"${t0.toISOString().substring(11)}",${dt}\n`
+      );
+    } catch (err) {
+      handleError(err, "Err at get3IP()->fs.appendFS(dt)");
+    }
+  }
 };
 
-const getTopIP = async (amount = 10) => {
+const getTopIP = async (amount = 3) => {
   const filename = `${new Date().toISOString().substring(0, 13)}top.csv`;
   const filepath = path.join(process.cwd(), filename);
 
