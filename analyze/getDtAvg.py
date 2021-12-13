@@ -10,9 +10,12 @@ def getDtAvg(file):
         for row in csvReader:
             dt = float(row[1])
             dts.append(dt)
+    dt_min = min(dts)
+    dt_avg = sum(dts)/len(dts)
+    dt_max = max(dts)
     print(dts)
-    print("max: {}".format(max(dts)))
-    print("avg: {}".format(round(sum(dts)/len(dts), 3)))
-    print("min: {}".format(min(dts)))
+    print("(min, avg, max) = ({}, {}, {})".format(
+        dt_min, round(dt_avg, 3), dt_max))
+
 
 getDtAvg(sys.argv[1])

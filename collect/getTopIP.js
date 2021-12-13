@@ -13,8 +13,12 @@ const {
 const { getTopInfo } = require("./getTopInfo.js");
 
 const handleError = (err, content, filename = "error.err") => {
-  const msg = `  [${new Date().toISOString()}]\n` + content + "\n" + err + "\n";
-  fs.appendFileSync(path.join(process.cwd(), filename), msg);
+  const msg = `  [${new Date().toISOString()}]\n${content}\n${err}\n`;
+  if (
+    !msg.includes("Request failed with status code 403") &&
+    !msg.includes("Request failed with status code 404")
+  )
+    fs.appendFileSync(path.join(process.cwd(), filename), msg);
 };
 
 const readTopN = async () => {
@@ -49,7 +53,7 @@ const getIP = async (channel) => {
       return ip;
     })
     .catch((error) => {
-      handleError(error, "Err at getIP()");
+      handleError(error, `Err at getIP(), ${channel}`);
       return error.message;
     });
 };
