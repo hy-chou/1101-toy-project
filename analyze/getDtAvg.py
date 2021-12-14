@@ -14,8 +14,11 @@ def getDtAvg(file):
     dt_avg = sum(dts)/len(dts)
     dt_max = max(dts)
     print(dts)
-    print("(min, avg, max) = ({}, {}, {})".format(
+    print('(min, avg, max) = ({}, {}, {})'.format(
         dt_min, round(dt_avg, 3), dt_max))
 
 
-getDtAvg(sys.argv[1])
+if len(sys.argv) == 2:
+    getDtAvg(sys.argv[1])
+else:
+    print('usage: python3 getDtAvg.py dt-file')
