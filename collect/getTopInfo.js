@@ -26,28 +26,30 @@ const pullTopN = async (amount) => {
 };
 
 const writeTopN = async (records) => {
-  const file1name = `${new Date().toISOString().substring(0, 13)}raw.json`;
-  const file1path = path.join(process.cwd(), file1name);
+  const now = new Date();
+
+  const rawFileName = `${now.toISOString().substring(0, 13)}raw.json`;
+  const rawFilePath = path.join(process.cwd(), rawFileName);
   try {
-    fs.appendFileSync(file1path, `${new Date().toISOString()}\n`);
-    fs.appendFileSync(file1path, JSON.stringify(records));
+    fs.appendFileSync(rawFilePath, `${now.toISOString().substring(14)}\n`);
+    fs.appendFileSync(rawFilePath, JSON.stringify(records));
   } catch (err) {
     handleError(err, "Err at writeTopN()->writeFS()");
   }
 
-  const file2name = `${new Date().toISOString().substring(0, 13)}top.csv`;
-  const file2path = path.join(process.cwd(), file2name);
-  let user_login_line = `${new Date().toISOString()}`;
-  let viewer_count_line = `${new Date().toISOString()}`;
+  const topFileName = `${now.toISOString().substring(0, 13)}top.csv`;
+  const topFilePath = path.join(process.cwd(), topFileName);
+  let user_login_line = "";
+  let viewer_count_line = `${now.toISOString().substring(14)}`;
   records.map((item) => {
     user_login_line += `, ${item["user_login"]}`;
     viewer_count_line += `, ${item["viewer_count"]}`;
   });
-  user_login_line += `\n`;
+  user_login_line = user_login_line.substring(2) + `\n`;
   viewer_count_line += `\n`;
   try {
-    fs.appendFileSync(file2path, user_login_line);
-    fs.appendFileSync(file2path, viewer_count_line);
+    fs.appendFileSync(topFilePath, user_login_line);
+    fs.appendFileSync(topFilePath, viewer_count_line);
   } catch (err) {
     handleError(err, "Err at writeTopN()->appendFS()");
     console.error(err);

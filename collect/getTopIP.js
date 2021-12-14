@@ -31,7 +31,7 @@ const readTopN = async () => {
 
     content = content.slice(0, content.search("\n"));
     channels = content.split(", ");
-    channels.shift();
+    // channels.shift();
   } catch (err) {
     handleError(err, "Err at readTopN()->fs.readFS()");
   }
@@ -64,18 +64,16 @@ const get3IP = async (channels) => {
     handleError(err, err);
     return;
   }
-  const rightnow = new Date();
-  const fileprenom = rightnow.getUTCDate() + "T" + rightnow.getUTCHours() + "_";
+  const fileprenom = new Date().toISOString().substring(8, 13);
 
   const t0 = new Date();
-
   for (let i = 0; i < channels.length; i++) {
     const filenom = fileprenom + channels[i] + ".csv";
     const filepath = path.join(process.cwd(), filenom);
 
-    const t1 = new Date().toISOString().substring(11);
+    const t1 = new Date().toISOString().substring(14);
     let ip = await getIP(channels[i]);
-    const t2 = new Date().toISOString().substring(11);
+    const t2 = new Date().toISOString().substring(14);
 
     if (ip === "Request failed with status code 403") ip = "!403!";
     else if (ip === "Request failed with status code 404") ip = "!404!";
@@ -85,7 +83,6 @@ const get3IP = async (channels) => {
       handleError(err, "Err at get3IP()->fs.appendFS()");
     }
   }
-
   const tn = new Date();
   if (t0.getSeconds() % 60 === 0) {
     const dt = (tn - t0) / 1000;
