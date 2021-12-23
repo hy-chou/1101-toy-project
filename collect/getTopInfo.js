@@ -8,12 +8,16 @@ const handleError = (err, content, filename = "error.err") => {
 };
 
 const pullTopN = async (amount) => {
+  let N = amount;
   const records = [];
   let cursor = "";
 
-  while (true) {
+  while (N > 0) {
+    let n = N >= 100 ? 100 : N;
+    N -= 100;
+
     const response = await API.twitchAPI("/helix/streams", {
-      first: amount,
+      first: n,
       after: cursor,
     });
     const liveChannels = response.data.data;
