@@ -11,6 +11,9 @@ def getNewIPTime(file, nip):
         csvReader = csv.reader(csvF)
         timer = 0
         for row in csvReader:
+            if timer >= 3600:
+                print(file, end=': number of line > 3600\n')
+                break
             if row[1][0].isdigit():
                 if row[1] not in ip_set:
                     ip_set.add(row[1])
