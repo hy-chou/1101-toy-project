@@ -16,7 +16,8 @@ def getIPSet():
 
     print(len(ip_set))
     for e in sorted(ip_set):
-        print(e)
+        if e[0].isdigit():
+            print(e)
 
 
 getIPSet()
