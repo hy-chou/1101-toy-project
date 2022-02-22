@@ -15,7 +15,7 @@ def getIPSet():
                 ip_set.add(row[1])
 
     print(len(ip_set))
-    for e in ip_set:
+    for e in sorted(ip_set):
         print(e)
 
 
