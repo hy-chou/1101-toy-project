@@ -12,12 +12,12 @@ def getIPSet():
         with open(file, 'r', encoding='utf-8') as f:
             table = csv.reader(f)
             for row in table:
-                ip_set.add(row[1])
+                if row[1][0].isdigit():
+                    ip_set.add(row[1])
 
     print(len(ip_set))
     for e in sorted(ip_set):
-        if e[0].isdigit():
-            print(e)
+        print(e)
 
 
 getIPSet()
