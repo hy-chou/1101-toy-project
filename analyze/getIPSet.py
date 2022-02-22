@@ -1,16 +1,22 @@
 import csv
+import os
 import sys
 
 
-def getIPSet(csvPath):
+def getIPSet():
     ip_set = set()
-    with open(csvPath, 'r', encoding='utf-8') as csvF:
-        csvReader = csv.reader(csvF)
-        for row in csvReader:
-            if row[1][0].isdigit():
+
+    for file in os.listdir():
+        if sys.argv[1] not in file:
+            continue
+        with open(file, 'r', encoding='utf-8') as f:
+            table = csv.reader(f)
+            for row in table:
                 ip_set.add(row[1])
+
     print(len(ip_set))
-    print(ip_set)
+    for e in ip_set:
+        print(e)
 
 
-getIPSet(sys.argv[1])
+getIPSet()
