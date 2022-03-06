@@ -32,7 +32,7 @@ const pullTopN = async (amount) => {
 const writeTopN = async (records) => {
   const now = new Date();
 
-  const rawFileName = `${now.toISOString().substring(0, 13)}raw.json`;
+  const rawFileName = `${now.toISOString().substring(0, 13)}topraw.json`;
   const rawFilePath = path.join(process.cwd(), rawFileName);
   try {
     fs.appendFileSync(rawFilePath, `${now.toISOString().substring(14)}\n`);

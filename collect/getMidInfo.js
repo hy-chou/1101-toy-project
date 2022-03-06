@@ -48,7 +48,7 @@ const pullMidN = async (amountP, amountQ) => {
 const writeMidN = async (records) => {
   const now = new Date();
 
-  const rawFileName = `${now.toISOString().substring(0, 13)}raw.json`;
+  const rawFileName = `${now.toISOString().substring(0, 13)}midraw.json`;
   const rawFilePath = path.join(process.cwd(), rawFileName);
   try {
     fs.appendFileSync(rawFilePath, `${now.toISOString().substring(14)}\n`);
