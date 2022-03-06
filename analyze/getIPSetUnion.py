@@ -1,10 +1,9 @@
-from ast import keyword
 import csv
 import os
 import sys
 
 
-def getIPSet(keyword):
+def getIPSetUnion(keyword):
     ip_set = set()
 
     for file in os.listdir():
@@ -13,8 +12,8 @@ def getIPSet(keyword):
         with open(file, 'r', encoding='utf-8') as f:
             table = csv.reader(f)
             for row in table:
-                if row[1][0].isdigit():
-                    ip_set.add(row[1])
+                if '.' in row[0]:
+                    ip_set.add(row[0])
 
     print(len(ip_set))
     for e in sorted(ip_set):
@@ -22,7 +21,7 @@ def getIPSet(keyword):
 
 
 if len(sys.argv) != 2 or sys.argv[1] == '-h':
-    print('usage: python3 getIPSet.py <keyword>')
+    print('usage: python3 getIPSetUnion.py <keyword>')
     exit()
 
-getIPSet(sys.argv[1])
+getIPSetUnion(sys.argv[1])
