@@ -3,7 +3,7 @@ import os
 import sys
 
 
-def getIPSetUnion(keyword):
+def getIPUnion(keyword):
     ip_set = set()
 
     for file in os.listdir():
@@ -21,7 +21,7 @@ def getIPSetUnion(keyword):
 
 
 if len(sys.argv) != 2 or sys.argv[1] == '-h':
-    print('usage: python3 getIPSetUnion.py <keyword>')
+    print('usage: python3 getIPUnion.py <keyword>')
     exit()
 
-getIPSetUnion(sys.argv[1])
+getIPUnion(sys.argv[1])
