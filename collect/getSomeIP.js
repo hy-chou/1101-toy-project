@@ -10,30 +10,28 @@ const {
   getPlaylistContent,
   parseMasterPlaylist,
 } = require("../../Jujuby/Prober/Utils/getEdgeAddr.js");
-const { getMidInfo } = require("./getMidInfo.js");
+const { getSomeInfo } = require("./getSomeInfo.js");
 
 const handleError = (err, content, filename = "error.err") => {
-  const msg = `  [${new Date().toISOString()}]\n${content}\n${err}\n`;
-  if (
-    !msg.includes("Request failed with status code 403") &&
-    !msg.includes("Request failed with status code 404")
-  )
-    fs.appendFileSync(path.join(process.cwd(), filename), msg);
+  const msg = `\t[${new Date().toISOString()}]\n` + content + "\n" + err + "\n";
+  fs.appendFileSync(path.join(process.cwd(), filename), msg);
 };
 
-const readMidN = async () => {
-  const filename = `${new Date().toISOString().substring(0, 13)}mid.csv`;
+const readViewerCount = async (amountP, amountQ) => {
+  const filename = `${new Date()
+    .toISOString()
+    .substring(0, 13)}vcnt${amountP}_${amountQ}.csv`;
   const filepath = path.join(process.cwd(), filename);
 
   let channels = [];
   try {
     let content = fs.readFileSync(filepath, "utf8");
 
-    content = content.slice(0, content.search("\n"));
-    channels = content.split(", ");
-    // channels.shift();
+    channels = content.split("\n");
+    channels = channels[channels.length - 3];
+    channels = channels.split(", ");
   } catch (err) {
-    handleError(err, "Err at readMidN()->fs.readFS()");
+    handleError(err, "@ readMidN()");
   }
   return channels;
 };
@@ -53,7 +51,7 @@ const getIP = async (channel) => {
       return ip;
     })
     .catch((error) => {
-      handleError(error, `Err at getIP(), ${channel}`);
+      handleError(error, `@ getIP(), ${channel}`);
       return error.message;
     });
 };
@@ -75,16 +73,15 @@ const get3IP = async (channels) => {
     let ip = await getIP(channels[i]);
     const t2 = new Date().toISOString().substring(14);
 
-    if (ip === "Request failed with status code 403") ip = "!403!";
-    else if (ip === "Request failed with status code 404") ip = "!404!";
+    if (ip === "Request failed with status code 404") ip = "e404";
     try {
       fs.appendFileSync(filepath, `"${t1}","${ip}","${t2}"\n`);
     } catch (err) {
-      handleError(err, "Err at get3IP()->fs.appendFS()");
+      handleError(err, `@ get3IP(), ${channels[i]}`);
     }
   }
   const tn = new Date();
-  if (t0.getSeconds() % 60 === 0) {
+  if (t0.getMinutes() % 10 === 0) {
     const dt = (tn - t0) / 1000;
     const filename = `${new Date().toISOString().substring(0, 13)}dt.csv`;
     const filepath = path.join(process.cwd(), filename);
@@ -94,26 +91,28 @@ const get3IP = async (channels) => {
         `"${t0.toISOString().substring(11)}",${dt}\n`
       );
     } catch (err) {
-      handleError(err, "Err at get3IP()->fs.appendFS(dt)");
+      handleError(err, "@ get3IP(), dt");
     }
   }
 };
 
-const getMidIP = async (amountP = 3, amountQ = 5) => {
-  const filename = `${new Date().toISOString().substring(0, 13)}mid.csv`;
+const getSomeIP = async (amountP = 1, amountQ = 3) => {
+  const filename = `${new Date()
+    .toISOString()
+    .substring(0, 13)}vcnt${amountP}_${amountQ}.csv`;
   const filepath = path.join(process.cwd(), filename);
 
-  if (!fs.existsSync(filepath)) await getMidInfo(amountP, amountQ);
+  if (!fs.existsSync(filepath)) await getSomeInfo(amountP, amountQ);
 
-  readMidN()
+  readViewerCount(amountP, amountQ)
     .then((channels) => get3IP(channels))
     .catch((err) => {
-      handleError(err, "Err at getMidIP()");
+      handleError(err, "Err at getSomeIP()");
     });
 };
 
-module.exports = { readMidN, getIP, get3IP, getMidIP };
+module.exports = { readViewerCount, getIP, get3IP, getSomeIP };
 
 if (require.main === module) {
-  getMidIP();
+  getSomeIP();
 }
