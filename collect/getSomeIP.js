@@ -64,7 +64,7 @@ const get3IP = async (channels) => {
   }
   const fileprenom = new Date().toISOString().substring(8, 13);
 
-  const t0 = new Date();
+  // const t0 = new Date();
   for (let i = 0; i < channels.length; i++) {
     const filenom = fileprenom + channels[i] + ".csv";
     const filepath = path.join(process.cwd(), filenom);
@@ -80,20 +80,20 @@ const get3IP = async (channels) => {
       handleError(err, `@ get3IP(), ${channels[i]}`);
     }
   }
-  const tn = new Date();
-  if (t0.getMinutes() % 10 === 0) {
-    const dt = (tn - t0) / 1000;
-    const filename = `${new Date().toISOString().substring(0, 13)}dt.csv`;
-    const filepath = path.join(process.cwd(), filename);
-    try {
-      fs.appendFileSync(
-        filepath,
-        `"${t0.toISOString().substring(11)}",${dt}\n`
-      );
-    } catch (err) {
-      handleError(err, "@ get3IP(), dt");
-    }
-  }
+  // const tn = new Date();
+  // if (t0.getMinutes() % 10 === 0) {
+  //   const dt = (tn - t0) / 1000;
+  //   const filename = `${new Date().toISOString().substring(0, 13)}dt.csv`;
+  //   const filepath = path.join(process.cwd(), filename);
+  //   try {
+  //     fs.appendFileSync(
+  //       filepath,
+  //       `"${t0.toISOString().substring(11)}",${dt}\n`
+  //     );
+  //   } catch (err) {
+  //     handleError(err, "@ get3IP(), dt");
+  //   }
+  // }
 };
 
 const getSomeIP = async (amountP = 1, amountQ = 3) => {
