@@ -8,9 +8,10 @@ dir="$1"
 
 cd ${dir}
 mkdir raws vcnts csvs
-mv 202*raw.json raws/.
-mv 202*vcnt*.csv vcnts/.
-mv *.csv csvs/.
+mv *-*raw.json raws/.
+mv *-*000.csv vcnts/.
+mv 17T*.csv csvs/.
+mv 18T*.csv csvs/.
 
 cd ..
 nohup xz -9 ${dir}/nohup.out >/dev/null 2>&1 &
