@@ -1,11 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "" ]; then
-    echo "usage: bash doCollect10k.sh dir"
-    exit 1
-fi
-dir="$1"
-
+dir="try99"
 dd="99"
 hh="0"
 he="23"
