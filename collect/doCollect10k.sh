@@ -1,16 +1,24 @@
 #!/bin/bash
 
-dir="try99"
-dd="99"
-hh="0"
-he="23"
+if [ "$4" == "" ]; then
+    echo "usage: bash doCollect10k.sh dir dd hh he"
+    echo ""
+    echo -e "dir\ttarget directory"
+    echo -e "dd\tlocal date"
+    echo -e "[hh, he]\n\tlocal hour"
+    exit 0
+fi
 
+dir="$1"
+dd="$2"
+hh="$3"
+he="$4"
 cmd="nohup node ../scheduler10k.js"
 
 test ! -d ${dir} && mkdir ${dir}
 cd ${dir}
 
-while [ ${hh} != $((${he}+1)) ]
+while [ ! ${hh} == $((${he}+1)) ]
 do
     ${cmd} "0 00-19/2 ${hh} ${dd} * *" "0 35 ${hh} ${dd} * *" &
     ${cmd} "0 20-39/2 ${hh} ${dd} * *" "0 55 ${hh} ${dd} * *" &
