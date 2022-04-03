@@ -13,23 +13,21 @@ const {
 const { getSomeInfo } = require("./getSomeInfo.js");
 
 const handleError = (err, content, filename = "error.err") => {
-  const msg = `\t[${new Date().toISOString()}]\n` + content + "\n" + err + "\n";
+  const msg = new Date().toISOString() + "\t" + content + "\t" + err + "\n";
   fs.appendFileSync(path.join(process.cwd(), filename), msg);
 };
 
 const readViewerCount = async (amountP, amountQ) => {
-  const filename = `${new Date()
-    .toISOString()
-    .substring(0, 13)}vcnt${amountP}_${amountQ}.csv`;
+  const tsY2H = new Date().toISOString().substring(0, 13);
+  const filename = `${tsY2H}vcnt${amountP}_${amountQ}.tsv`;
   const filepath = path.join(process.cwd(), filename);
 
   let channels = [];
   try {
     let content = fs.readFileSync(filepath, "utf8");
 
-    channels = content.split("\n");
-    channels = channels[channels.length - 3];
-    channels = channels.split(", ");
+    content = content.split("\n");
+    channels = content[content.length - 3].split("\t");
   } catch (err) {
     handleError(err, "@ readMidN()");
   }
@@ -62,20 +60,19 @@ const get3IP = async (channels) => {
     handleError(err, err);
     return;
   }
-  const fileprenom = new Date().toISOString().substring(8, 13);
+  const tsD2H = new Date().toISOString().substring(8, 13);
 
   // const t0 = new Date();
   for (let i = 0; i < channels.length; i++) {
-    const filenom = fileprenom + channels[i] + ".csv";
-    const filepath = path.join(process.cwd(), filenom);
+    const filename = tsD2H + channels[i] + ".tsv";
+    const filepath = path.join(process.cwd(), filename);
 
-    const t1 = new Date().toISOString().substring(14);
+    const tsH2 = new Date().toISOString().substring(11);
     let ip = await getIP(channels[i]);
-    const t2 = new Date().toISOString().substring(14);
+    const tsM2 = new Date().toISOString().substring(14);
 
-    if (ip === "Request failed with status code 404") ip = "e404";
     try {
-      fs.appendFileSync(filepath, `"${t1}","${ip}","${t2}"\n`);
+      fs.appendFileSync(filepath, tsH2 + "\t" + ip + "\t" + tsM2 + "\n");
     } catch (err) {
       handleError(err, `@ get3IP(), ${channels[i]}`);
     }
@@ -97,9 +94,8 @@ const get3IP = async (channels) => {
 };
 
 const getSomeIP = async (amountP = 1, amountQ = 3) => {
-  const filename = `${new Date()
-    .toISOString()
-    .substring(0, 13)}vcnt${amountP}_${amountQ}.csv`;
+  const ts2H = new Date().toISOString().substring(0, 13);
+  const filename = `${ts2H}vcnt${amountP}_${amountQ}.tsv`;
   const filepath = path.join(process.cwd(), filename);
 
   if (!fs.existsSync(filepath)) await getSomeInfo(amountP, amountQ);

@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const handleError = (err, content, filename = "error.err") => {
-  const msg = `\t[${new Date().toISOString()}]\n` + content + "\n" + err + "\n";
+  const msg = new Date().toISOString() + "\t" + content + "\t" + err + "\n";
   fs.appendFileSync(path.join(process.cwd(), filename), msg);
 };
 
@@ -45,33 +45,31 @@ const pullInfo = async (amountP, amountQ) => {
 };
 
 const writeInfo = async (records, amountP, amountQ) => {
-  const now = new Date();
+  const ts = new Date().toISOString();
+  const ts2H = ts.substring(0, 13);
 
-  const rawFileName = `${now.toISOString().substring(0, 13)}raw.json`;
+  const rawFileName = ts2H + "raw.json.tsv";
   const rawFilePath = path.join(process.cwd(), rawFileName);
 
   try {
-    fs.appendFileSync(rawFilePath, `\t[${now.toISOString()}]\n`);
-    fs.appendFileSync(rawFilePath, JSON.stringify(records));
+    fs.appendFileSync(rawFilePath, `${ts}\t${JSON.stringify(records)}\n`);
   } catch (err) {
-    handleError(err, "@ writeInfo(), raw.json");
+    handleError(err, "@ writeInfo(), raw.json.tsv");
   }
 
-  const vcntFileName = `${new Date()
-    .toISOString()
-    .substring(0, 13)}vcnt${amountP}_${amountQ}.csv`;
+  const vcntFileName = `${ts2H}vcnt${amountP}_${amountQ}.tsv`;
   const vcntFilePath = path.join(process.cwd(), vcntFileName);
 
   let user_login_line = "";
   let viewer_count_line = "";
   records.map((item) => {
-    user_login_line += `, ${item["user_login"]}`;
-    viewer_count_line += `, ${item["viewer_count"]}`;
+    user_login_line += "\t" + item["user_login"];
+    viewer_count_line += "\t" + item["viewer_count"];
   });
-  user_login_line = user_login_line.substring(2) + `\n`;
-  viewer_count_line = viewer_count_line.substring(2) + `\n`;
+  user_login_line = user_login_line.substring(1) + "\n";
+  viewer_count_line = viewer_count_line.substring(1) + "\n";
   try {
-    fs.appendFileSync(vcntFilePath, `\t${now.toISOString().substring(14)}\n`);
+    fs.appendFileSync(vcntFilePath, ts + "\n");
     fs.appendFileSync(vcntFilePath, user_login_line);
     fs.appendFileSync(vcntFilePath, viewer_count_line);
   } catch (err) {
