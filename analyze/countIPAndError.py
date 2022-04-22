@@ -1,7 +1,6 @@
 import os
 
-
-def countIPAndError(delimiter='","'):
+def countIPAndError(delimiter='\t'):
     d = dict()
 
     for file in os.listdir():
@@ -16,8 +15,8 @@ def countIPAndError(delimiter='","'):
             else:
                 d.update({l[1]: 1})
 
+    print('count\tIP / error')
     for k in sorted(d):
         print(f'{d[k]}\t{k}')
-
 
 countIPAndError()
