@@ -1,16 +1,16 @@
 import os
 
 
-def countIPAndError(delimiter='","'):
+def countIPAndError():
     d = dict()
 
-    for file in os.listdir():
+    for file in os.listdir('./tsvs'):
         # if 'keyword' not in file:
         #     continue
-        with open(file, 'r', encoding='utf-8') as f:
+        with open('./tsvs/' + file, 'r') as f:
             lines = f.readlines()
         for line in lines:
-            l = line.split(delimiter)
+            l = line.split('\t')
             if l[1] in d:
                 d[l[1]] += 1
             else:
