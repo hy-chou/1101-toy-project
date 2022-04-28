@@ -18,8 +18,8 @@ const handleError = (err, content, filename = "error.err") => {
 };
 
 const readViewerCount = async (amountP, amountQ) => {
-  const tsY2H = new Date().toISOString().substring(0, 13);
-  const filename = `${tsY2H}vcnt${amountP}_${amountQ}.tsv`;
+  const ts2H = new Date().toISOString().substring(0, 13);
+  const filename = `${ts2H}vcnt${amountP}_${amountQ}.tsv`;
   const filepath = path.join(process.cwd(), filename);
 
   let channels = [];
@@ -60,10 +60,10 @@ const get3IP = async (channels) => {
     handleError(err, err);
     return;
   }
-  const tsD2H = new Date().toISOString().substring(8, 13);
+  const ts2H = new Date().toISOString().substring(0, 13);
 
   for (let i = 0; i < channels.length; i++) {
-    const filename = tsD2H + channels[i] + ".tsv";
+    const filename = ts2H + channels[i] + ".tsv";
     const filepath = path.join(process.cwd(), filename);
 
     const ts1 = new Date().toISOString();
