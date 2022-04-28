@@ -16,6 +16,7 @@ def countIPAndError():
             else:
                 d.update({l[1]: 1})
 
+    print('count\tIP / error')
     for k in sorted(d):
         print(f'{d[k]}\t{k}')
 

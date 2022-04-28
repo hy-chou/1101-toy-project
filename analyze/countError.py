@@ -1,7 +1,7 @@
 import os
 
 
-def countError(delimiter='","'):
+def countError(delimiter='\t'):
     cnt_line = 0
     error_dict = dict()
 
