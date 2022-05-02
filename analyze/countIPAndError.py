@@ -1,24 +1,44 @@
-import os
+from os import listdir
 
 
-def countIPAndError():
-    d = dict()
+def countIP(keyword=''):
+    ipcount = dict()
+    errcount = dict()
 
-    for file in os.listdir('./tsvs'):
-        # if 'keyword' not in file:
-        #     continue
+    for file in listdir('./tsvs'):
+        if keyword != '' and keyword not in file:
+            continue
+
         with open('./tsvs/' + file, 'r') as f:
             lines = f.readlines()
         for line in lines:
             l = line.split('\t')
-            if l[1] in d:
-                d[l[1]] += 1
+
+            # count IP
+            if l[1][0].isdigit():
+                if l[1] in ipcount:
+                    ipcount[l[1]] += 1
+                else:
+                    ipcount.update({l[1]: 1})
+
+            # count error
             else:
-                d.update({l[1]: 1})
+                if l[1] in errcount:
+                    errcount[l[1]] += 1
+                else:
+                    errcount.update({l[1]: 1})
 
+    totalerr = sum(errcount.values())
+    totalip = sum(ipcount.values())
     print('count\tIP / error')
-    for k in sorted(d):
-        print(f'{d[k]}\t{k}')
+    for k in sorted(ipcount):
+        print(f'{ipcount[k]}\t{k}')
+    for k in sorted(errcount):
+        print(f'{errcount[k]}\t{k}')
+
+    print(f'\ntotal IP\t{totalip}\t{totalip/(totalip+totalerr):.2}')
+    print(f'total error\t{totalerr}\t{totalerr/(totalip+totalerr):.2}')
 
 
-countIPAndError()
+# countIP()
+# countIP(keyword='')
