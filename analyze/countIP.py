@@ -30,14 +30,14 @@ def countIP(keyword=''):
 
     totalerr = sum(errcount.values())
     totalip = sum(ipcount.values())
-    print('count\tIP / error')
+    print('#count\tIP / error')
     for k in sorted(ipcount):
         print(f'{ipcount[k]}\t{k}')
     for k in sorted(errcount):
         print(f'{errcount[k]}\t{k}')
 
-    print(f'\ntotal IP\t{totalip}\t{totalip/(totalip+totalerr):.2}')
-    print(f'total error\t{totalerr}\t{totalerr/(totalip+totalerr):.2}')
+    print(f'\n#total IP\t{totalip}\t{totalip/(totalip+totalerr):.2}')
+    print(f'#total error\t{totalerr}\t{totalerr/(totalip+totalerr):.2}')
 
 
 # countIP()
