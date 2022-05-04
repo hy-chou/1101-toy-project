@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
-from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
-import matplotlib.pyplot as plt
 from os import getcwd, listdir
 from time import process_time
+
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter, HourLocator, MinuteLocator
 
 
 def plotIvTpC(ulogin):
@@ -13,6 +14,7 @@ def plotIvTpC(ulogin):
             continue
         with open(f'./tsvs/{file}', 'r') as f:
             lines += f.readlines()
+    lines.sort()
 
     x_time = []
     y_ip = []
@@ -25,9 +27,9 @@ def plotIvTpC(ulogin):
     if len(x_time) == 0:
         return
 
-    # sort chronologically
+    # sort by IP
     x_time,  y_ip = (list(i) for i in zip(
-        *sorted(zip(x_time, y_ip), key=lambda pair: pair[0])))
+        *sorted(zip(x_time, y_ip), key=lambda pair: pair[1])))
 
     # plot
     fig, ax = plt.subplots()
@@ -47,22 +49,25 @@ def plotIvTpC(ulogin):
     cwd = getcwd()
     cwd = cwd[cwd.rfind('/') + 1:]
     ax.set_title(f'{cwd}/{ulogin}')
-    plt.savefig(f'{ulogin}.png', bbox_inches='tight')
+    plt.savefig(f'{ulogin}.ivtpc.png', bbox_inches='tight')
     plt.close(fig)
 
 
-# t1 = process_time()
+t1 = process_time()
 
-# ulogins = set()
-# for file in listdir('./vcnts'):
-#     # print(file)
-#     with open('./vcnts/' + file, 'r') as f:
-#         lines = f.readlines()
-#     l = lines[1].split('\t')[:-1]
-#     ulogins.add(l[0])
+files = []
+for file in listdir('./vcnts'):
+    files.append(file)
 
-# for ulogin in ulogins:
-#     plotIvTpC(ulogin)
+ulogins = set()
+for file in files:
+    with open('./vcnts/' + file, 'r') as f:
+        lines = f.readlines()
+    l = lines[-2].split('\t')
+    ulogins.add(l[0])
 
-# t2 = process_time()
-# print(t2 - t1)
+for ulogin in ulogins:
+    plotIvTpC(ulogin)
+
+t2 = process_time()
+print(t2 - t1)
