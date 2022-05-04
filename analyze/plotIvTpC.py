@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from os import getcwd, listdir
 from time import process_time
+from random import randint
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter, HourLocator, MinuteLocator
@@ -32,7 +33,9 @@ def plotIvTpC(ulogin):
         *sorted(zip(x_time, y_ip), key=lambda pair: pair[1])))
 
     # plot
-    fig, ax = plt.subplots()
+    yfigsize = max (len(set(y_ip))/5 + 1 , 4.8)
+    fig, ax = plt.subplots(figsize=(6.4, yfigsize))
+    # fig, ax = plt.subplots()
     ax.scatter(x_time, y_ip, c='#00ff00', marker='|')
     if (max(x_time) - min(x_time) < timedelta(hours=1)):
         locator = MinuteLocator([5 * i for i in range(12)])
@@ -64,7 +67,10 @@ for file in files:
     with open('./vcnts/' + file, 'r') as f:
         lines = f.readlines()
     l = lines[-2].split('\t')
+    # top1 channel
     ulogins.add(l[0])
+    # random channel
+    # ulogins.add(l[randint(0, len(l) - 1)])
 
 for ulogin in ulogins:
     plotIvTpC(ulogin)
