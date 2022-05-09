@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$4" == "" ]; then
-    echo "usage: bash doCollect10k.sh dir dd hh he"
+    echo "usage: bash doCollect2m2k.sh dir dd hh he"
     echo ""
     echo -e "dir\ttarget directory"
     echo -e "dd\tlocal date"
@@ -13,7 +13,7 @@ dir="$1"
 dd="$2"
 hh="$3"
 he="$4"
-cmd="nohup node ../scheduler10k.js"
+cmd="nohup node ../scheduler2k.js"
 
 test ! -d ${dir} && mkdir ${dir}
 cd ${dir}

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$4" == "" ]; then
-    echo "usage: bash doCollect2nd10k.sh dir dd hh he"
+    echo "usage: bash doCollect1s1k.sh dir dd hh he"
     echo ""
     echo -e "dir\ttarget directory"
     echo -e "dd\tlocal date"
@@ -13,20 +13,20 @@ dir="$1"
 dd="$2"
 hh="$3"
 he="$4"
-cmd="nohup node ../scheduler2nd10k.js"
+cmd="nohup node ../scheduler1k.js"
 
 test ! -d ${dir} && mkdir ${dir}
 cd ${dir}
 
 while [ ! ${hh} == $((${he}+1)) ]
 do
-    ${cmd} "0 00-19/2 ${hh} ${dd} * *" "0 35 ${hh} ${dd} * *" >/dev/null 2>&1 &
-    ${cmd} "0 20-39/2 ${hh} ${dd} * *" "0 55 ${hh} ${dd} * *" >/dev/null 2>&1 &
+    ${cmd} "* * ${hh} ${dd} * *" "0 35 ${hh} ${dd} * *" >/dev/null 2>&1 &
+    ${cmd} "* * ${hh} ${dd} * *" "0 55 ${hh} ${dd} * *" >/dev/null 2>&1 &
     if [ ${hh} != 23 ]; then
-        ${cmd} "0 40-59/2 ${hh} ${dd} * *" "0 15 $((${hh}+1)) ${dd} * *" >/dev/null 2>&1 &
+        ${cmd} "* * ${hh} ${dd} * *" "0 15 $((${hh}+1)) ${dd} * *" >/dev/null 2>&1 &
         hh="$((${hh}+1))"
     else
-        ${cmd} "0 40-59/2 23 ${dd} * *" "0 15 0 $((${dd}+1)) * *" >/dev/null 2>&1 &
+        ${cmd} "* * 23 ${dd} * *" "0 15 0 $((${dd}+1)) * *" >/dev/null 2>&1 &
         sleep 1
         echo "All done."
         exit 0

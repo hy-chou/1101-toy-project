@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$1" == "" ]; then
-    echo "usage: bash doCollect.sh dir"
+    echo "usage: bash doCollect10s10k.sh dir"
     exit 1
 fi
 dir="$1"
