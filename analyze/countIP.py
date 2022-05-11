@@ -36,8 +36,11 @@ def countIP(keyword=''):
     for k in sorted(errcount):
         print(f'{errcount[k]}\t{k}')
 
-    print(f'\n#total IP\t{totalip}\t{totalip/(totalip+totalerr):.2}')
-    print(f'#total error\t{totalerr}\t{totalerr/(totalip+totalerr):.2}')
+    print(f'\n# {len(ipcount)} distinct IPs, ', end='')
+    print(f'{totalip} responses.')
+    print(f'# {len(errcount)} kinds of error, ', end='')
+    print(f'{totalerr} responses ', end='')
+    print(f'and error rate {totalerr/(totalip+totalerr):.2}')
 
 
 # countIP()
