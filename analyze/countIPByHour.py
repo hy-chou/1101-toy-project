@@ -7,7 +7,7 @@ def countIPByHour(hh):
 
     for file in listdir('./tsvs'):
     # for file in listdir('./csvs'):
-        if not file.startswith(hh):
+        if not file.startswith(hh[-5:]):
             continue
 
         with open('./tsvs/' + file, 'r') as f:
