@@ -1,13 +1,13 @@
 from os import listdir
 
 
-def countIP(keyword=''):
+def countIPByHour(hh):
     ipcount = dict()
     errcount = dict()
 
     for file in listdir('./tsvs'):
     # for file in listdir('./csvs'):
-        if keyword != '' and keyword not in file:
+        if not file.startswith(hh):
             continue
 
         with open('./tsvs/' + file, 'r') as f:
@@ -33,18 +33,26 @@ def countIP(keyword=''):
 
     totalerr = sum(errcount.values())
     totalip = sum(ipcount.values())
-    print('#count\tIP / error')
-    for k in sorted(ipcount):
-        print(f'{ipcount[k]}\t{k}')
-    for k in sorted(errcount):
-        print(f'{errcount[k]}\t{k}')
+    if totalip + totalerr == 0:
+        return
+    with open(f'./ipcounts/{hh}.ipcount.tsv', 'x') as fo:
+        fo.write('#count\tIP / error\n')
+        for k in sorted(ipcount):
+            fo.write(f'{ipcount[k]}\t{k}\n')
+        for k in sorted(errcount):
+            fo.write(f'{errcount[k]}\t{k}\n')
 
-    print(f'\n# {len(ipcount)} distinct IPs, ', end='')
-    print(f'{totalip} responses.')
-    print(f'# {len(errcount)} kinds of error, ', end='')
-    print(f'{totalerr} responses ', end='')
-    print(f'and error rate {totalerr/(totalip+totalerr):.2}')
+        fo.write(f'\n# {len(ipcount)} distinct IPs, ')
+        fo.write(f'{totalip} responses.\n')
+        fo.write(f'# {len(errcount)} kinds of error, ')
+        fo.write(f'{totalerr} responses ')
+        fo.write(f'and error rate {totalerr/(totalip+totalerr):.2}\n')
 
 
-countIP()
-# countIP(keyword='')
+hhs = set()
+for file in listdir('./raws'):
+    hhs.add(file[:13])
+    # hhs.add(file[8:13])
+for hh in sorted(list(hhs)):
+    print(hh)
+    countIPByHour(hh)
