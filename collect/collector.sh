@@ -20,15 +20,11 @@ while [ ! ${HH} == $((${Hn}+1)) ]
 do
     ${CMD_LEFT} "00-19 ${HH} ${DD} * *" "30 ${HH} ${DD} * *" > /dev/null 2>&1 &
     ${CMD_LEFT} "20-39 ${HH} ${DD} * *" "50 ${HH} ${DD} * *" > /dev/null 2>&1 &
-    # echo "${CMD_LEFT} \"00-19 ${HH} ${DD} * *\" \"30 ${HH} ${DD} * *\" > /dev/null 2>&1 &"
-    # echo "${CMD_LEFT} \"20-39 ${HH} ${DD} * *\" \"50 ${HH} ${DD} * *\" > /dev/null 2>&1 &"
     if [ ${HH} != 23 ] ; then
         ${CMD_LEFT} "40-59 ${HH} ${DD} * *" "10 $((${HH}+1)) ${DD} * *" > /dev/null 2>&1 &
-        # echo "${CMD_LEFT} \"40-59 ${HH} ${DD} * *\" \"10 $((${HH}+1)) ${DD} * *\" > /dev/null 2>&1 &"
         HH="$((${HH}+1))"
     else
         ${CMD_LEFT} "40-59 23 ${DD} * *" "10 0 $((${DD}+1)) * *" > /dev/null 2>&1 &
-        # echo "${CMD_LEFT} \"40-59 23 ${DD} * *\" \"10 0 $((${DD}+1)) * *\" > /dev/null 2>&1 &"
         exit 0
     fi
 done
