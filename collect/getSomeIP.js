@@ -66,12 +66,16 @@ const get3IP = async (channels) => {
     const filename = ts2H + channels[i] + ".tsv";
     const filepath = path.join(process.cwd(), filename);
 
-    const ts1 = new Date().toISOString();
+    // const ts1 = new Date().toISOString();
+    const ts1 = new Date();
     let ip = await getIP(channels[i]);
-    const ts2 = new Date().toISOString();
+    // const ts2 = new Date().toISOString();
+    const ts2 = new Date();
+    const dts = (ts2 - ts1)/1000;
 
     try {
-      fs.appendFileSync(filepath, ts1 + "\t" + ip + "\t" + ts2 + "\n");
+      // fs.appendFileSync(filepath, ts1 + "\t" + ip + "\t" + ts2 + "\n");
+      fs.appendFileSync(filepath, ts1.toISOString() + "\t" + ip + "\t" + dts + "\n");
     } catch (err) {
       handleError(err, `@ get3IP(), ${channels[i]}`);
     }
