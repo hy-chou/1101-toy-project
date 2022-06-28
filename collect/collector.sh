@@ -1,20 +1,22 @@
 #!/bin/bash
 
-if [ "$3" == "" ] ; then
+if [ "$5" == "" ] ; then
     echo "usage:  "
     echo "1. cd TARGET_DIR"
-    echo "2. bash ../collector.sh DD H1 Hn"
+    echo "2. bash ../collector.sh DD H1 Hn C1 Cn"
     echo ""
     echo -e "DD\tdate (local)"
     echo -e "H1\tfirst hour (local)"
     echo -e "Hn\tlast hour (local)"
+    echo -e "C1\tfirst count (local)"
+    echo -e "Cn\tlast count (local)"
     exit 0
 fi
 
 DD="$1"
 HH="$2"
 Hn="$3"
-CMD_LEFT="nohup node ../scheduler10.js"
+CMD_LEFT="nohup node ../scheduler.js $4 $5"
 
 while [ ! ${HH} == $((${Hn}+1)) ]
 do
