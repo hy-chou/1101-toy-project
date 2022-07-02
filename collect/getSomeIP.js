@@ -66,20 +66,45 @@ const get3IP = async (channels) => {
     const filename = ts2H + channels[i] + ".tsv";
     const filepath = path.join(process.cwd(), filename);
 
-    // const ts1 = new Date().toISOString();
     const ts1 = new Date();
     let ip = await getIP(channels[i]);
-    // const ts2 = new Date().toISOString();
     const ts2 = new Date();
     const dts = (ts2 - ts1)/1000;
 
     try {
-      // fs.appendFileSync(filepath, ts1 + "\t" + ip + "\t" + ts2 + "\n");
       fs.appendFileSync(filepath, ts1.toISOString() + "\t" + ip + "\t" + dts + "\n");
     } catch (err) {
       handleError(err, `@ get3IP(), ${channels[i]}`);
     }
   }
+};
+
+const getIPs = async (channels) => {
+  if (channels.length === 0) {
+    const err = "Empty list. channels.length === 0";
+    handleError(err, err);
+    return;
+  }
+  const ts2H = new Date().toISOString().substring(0, 13);
+
+  const pchannels  = channels.map((ulogin)=> new Promise((res) => {
+    const filename = ts2H + ulogin + ".tsv";
+    const filepath = path.join(process.cwd(), filename);
+
+    const ts1 = new Date();
+    getIP(ulogin).then((ip) => {
+      const ts2 = new Date();
+      const dts = (ts2 - ts1)/1000;
+
+      try {
+        fs.appendFileSync(filepath, ts1.toISOString() + "\t" + ip + "\t" + dts + "\n");
+      } catch (err) {
+        handleError(err, `@ get3IP(), ${ulogin}`);
+      }
+    }).then(()=> res())
+  }))
+
+  return Promise.all(pchannels)
 };
 
 const getSomeIP = async (amountP = 1, amountQ = 3) => {
@@ -91,12 +116,13 @@ const getSomeIP = async (amountP = 1, amountQ = 3) => {
 
   readViewerCount(amountP, amountQ)
     .then((channels) => get3IP(channels))
+    // .then((channels) => getIPs(channels))
     .catch((err) => {
       handleError(err, "Err at getSomeIP()");
     });
 };
 
-module.exports = { readViewerCount, getIP, get3IP, getSomeIP };
+module.exports = { readViewerCount, getIP, get3IP, getIPs, getSomeIP };
 
 if (require.main === module) {
   getSomeIP();

@@ -2,7 +2,7 @@ from datetime import datetime
 from os import listdir
 
 
-def getLagMax():
+def getLags():
     file = list(listdir('./tsvs'))[0]
     with open(f'./tsvs/{file}', 'r') as f:
         linecount = len(f.readlines())
@@ -25,7 +25,15 @@ def getLagMax():
     for t0, tn in zip(t0s, tns):
         lag = (tn - t0).total_seconds()
         lags.append(lag)
+    return lags
+
+def getLagMax():
+    lags = getLags()
     lagmax = max(lags)
     lagavg = sum(lags) / len(lags)
     lagmin = min(lags)
     print(f'lag\t{lagmin}\t{lagavg:.3f}\t{lagmax} s')
+
+# lags = getLags()
+# for i in range(len(lags)):
+#     print(i, lags[i])
