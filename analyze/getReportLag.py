@@ -12,6 +12,8 @@ def getLags():
     for file in listdir('./tsvs'):
         with open(f'./tsvs/{file}', 'r') as f:
             lines = f.readlines()
+        if len(lines) != linecount:
+            continue
         for i in range(linecount):
             line = lines[i]
             q = line.find('\t') - 1
