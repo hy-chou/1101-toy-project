@@ -8,41 +8,74 @@ const handleError = (err, content, filename = "error.err") => {
 };
 
 const pullInfo = async (amountP, amountQ) => {
-  let P = amountP - 1;
-  let N = amountQ - amountP + 1;
+  let N = amountQ;
   const records = [];
   let cursor = "";
 
-  while (P > 0) {
-    let n = P >= 100 ? 100 : P;
-    P -= 100;
+  while (N > 0){
+    // let n = (N > 100) ? 100 : N;
+    N -= 100;
 
     const response = await API.twitchAPI("/helix/streams", {
-      first: n,
+      // first: n,
+      first: 100,
       after: cursor,
     });
     const liveChannels = response.data.data;
 
     if (liveChannels.length === 0) break;
-    cursor = response.data.pagination.cursor;
-  }
-  while (N > 0) {
-    let n = N >= 100 ? 100 : N;
-    N -= 100;
 
-    const response = await API.twitchAPI("/helix/streams", {
-      first: n,
-      after: cursor,
-    });
-    const liveChannels = response.data.data;
-
-    if (liveChannels.length === 0 || records.length >= amountQ - amountP + 1)
-      break;
     liveChannels.map((data) => records.push(data));
     cursor = response.data.pagination.cursor;
   }
-  return records;
+
+  return records.slice(amountP - amountQ - 1);
+
+  // let P = amountP - 1;
+  // let N = amountQ - amountP + 1;
+  // const records = [];
+  // let cursor = "";
+
+  // while (P > 0) {
+  //   let n = P >= 100 ? 100 : P;
+  //   P -= 100;
+
+  //   const response = await API.twitchAPI("/helix/streams", {
+  //     first: n,
+  //     after: cursor,
+  //   });
+  //   const liveChannels = response.data.data;
+
+  //   if (liveChannels.length === 0) break;
+  //   cursor = response.data.pagination.cursor;
+  // }
+  // while (N > 0) {
+  //   let n = N >= 100 ? 100 : N;
+  //   N -= 100;
+
+  //   const response = await API.twitchAPI("/helix/streams", {
+  //     first: n,
+  //     after: cursor,
+  //   });
+  //   const liveChannels = response.data.data;
+
+  //   if (liveChannels.length === 0 || records.length >= amountQ - amountP + 1)
+  //     break;
+  //   liveChannels.map((data) => records.push(data));
+  //   cursor = response.data.pagination.cursor;
+  // }
+  // return records;
 };
+
+const chunkInfo = async (longrecords, amountP, amountQ) => {
+  let N = 0;
+
+  while (N + 100 < amountQ - amountP + 1) {
+    writeInfo(longrecords.slice(N, N + 100), amountP + N, amountP + N + 99);
+    N += 100;
+  }
+  writeInfo(longrecords.slice(N), amountP + N, amountQ);
+}
 
 const writeInfo = async (records, amountP, amountQ) => {
   const ts = new Date().toISOString();
@@ -80,11 +113,12 @@ const writeInfo = async (records, amountP, amountQ) => {
 
 const getSomeInfo = async (amountP = 1, amountQ = 3) => {
   return pullInfo(amountP, amountQ)
-    .then((records) => writeInfo(records, amountP, amountQ))
+    .then((records) => chunkInfo(records, amountP, amountQ))
+    // .then((records) => writeInfo(records, amountP, amountQ))
     .catch((err) => handleError(err, "@ getSomeInfo()"));
 };
 
-module.exports = { pullInfo, writeInfo, getSomeInfo };
+module.exports = { getSomeInfo };
 
 if (require.main === module) {
   getSomeInfo();

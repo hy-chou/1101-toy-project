@@ -113,6 +113,10 @@ const getSomeIP = async (amountP = 1, amountQ = 3) => {
   const filepath = path.join(process.cwd(), filename);
 
   if (!fs.existsSync(filepath)) await getSomeInfo(amountP, amountQ);
+  // if (!fs.existsSync(filepath)) {
+  //   handleError(`${filepath} DNE`, `@ getSomeIP()`);
+  //   return
+  // }
 
   readViewerCount(amountP, amountQ)
     .then((channels) => get3IP(channels))
@@ -122,7 +126,7 @@ const getSomeIP = async (amountP = 1, amountQ = 3) => {
     });
 };
 
-module.exports = { readViewerCount, getIP, get3IP, getIPs, getSomeIP };
+module.exports = { getSomeIP };
 
 if (require.main === module) {
   getSomeIP();
