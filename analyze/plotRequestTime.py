@@ -3,6 +3,7 @@ from os import listdir, getcwd
 from time import process_time
 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 def getFilenameList():
     filenames = []
@@ -45,7 +46,9 @@ def plotRequestTime():
     cwd = getcwd()
     cwd = cwd[cwd.rfind('/') + 1:]
     ax.set_title(cwd)
-    ax.set_ylabel('Request Time')
+    ax.set_xlabel('Request Time')
+    # ax.xaxis.set_major_locator(mdates.SecondLocator(interval=30))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%M'%S''"))
     # ax.legend()
     plt.savefig('./plots/requestTime.png', bbox_inches='tight')
     plt.close(fig)
