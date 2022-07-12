@@ -47,8 +47,8 @@ def plotRequestTime():
     cwd = cwd[cwd.rfind('/') + 1:]
     ax.set_title(cwd)
     ax.set_xlabel('Request Time')
-    # ax.xaxis.set_major_locator(mdates.SecondLocator(interval=30))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%M'%S''"))
+    ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter(':%M'))
     # ax.legend()
     plt.savefig('./plots/requestTime.png', bbox_inches='tight')
     plt.close(fig)
