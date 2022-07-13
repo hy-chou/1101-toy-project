@@ -11,10 +11,9 @@ fi
 
 sleep "$1"
 
-for i in {0..13}
+for i in {0..120}
 do
     date --iso-8601="seconds" >> date.txt
     top -bn 1 | head -n 5 >> top.txt
-    iftop -ts 60 | tail -n 4 | head -n 2 >> iftop.txt
-    sleep 4m
+    iftop -ts 30 | tail -n 4 | head -n 2 >> iftop.txt
 done
