@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
-const { lookupDNSCache } = require("../../Jujuby/Prober/Cache/DNSCache.js");
+const cron = require("node-cron");
 const {
   getAccessToken,
   getBestQualityPlaylistUri,
@@ -11,6 +11,7 @@ const {
   parseMasterPlaylist,
 } = require("./getEdgeAddrLocal.js");
 const { getSomeInfo } = require("./getSomeInfo.js");
+const { lookupDNSCache } = require("../../Jujuby/Prober/Cache/DNSCache.js");
 
 const handleError = (err, content, filename = "error.err") => {
   const msg = new Date().toISOString() + "\t" + content + "\t" + err + "\n";
@@ -79,48 +80,15 @@ const get3IP = async (channels) => {
   }
 };
 
-const getIPs = async (channels) => {
-  if (channels.length === 0) {
-    const err = "Empty list. channels.length === 0";
-    handleError(err, err);
-    return;
-  }
-  const ts2H = new Date().toISOString().substring(0, 13);
-
-  const pchannels  = channels.map((ulogin)=> new Promise((res) => {
-    const filename = ts2H + ulogin + ".tsv";
-    const filepath = path.join(process.cwd(), filename);
-
-    const ts1 = new Date();
-    getIP(ulogin).then((ip) => {
-      const ts2 = new Date();
-      const dts = (ts2 - ts1)/1000;
-
-      try {
-        fs.appendFileSync(filepath, ts1.toISOString() + "\t" + ip + "\t" + dts + "\n");
-      } catch (err) {
-        handleError(err, `@ get3IP(), ${ulogin}`);
-      }
-    }).then(()=> res())
-  }))
-
-  return Promise.all(pchannels)
-};
-
 const getSomeIP = async (amountP = 1, amountQ = 3) => {
   const ts2H = new Date().toISOString().substring(0, 13);
   const filename = `${ts2H}vcnt${amountP}_${amountQ}.tsv`;
   const filepath = path.join(process.cwd(), filename);
 
   if (!fs.existsSync(filepath)) await getSomeInfo(amountP, amountQ);
-  // if (!fs.existsSync(filepath)) {
-  //   handleError(`${filepath} DNE`, `@ getSomeIP()`);
-  //   return
-  // }
 
   readViewerCount(amountP, amountQ)
     .then((channels) => get3IP(channels))
-    // .then((channels) => getIPs(channels))
     .catch((err) => {
       handleError(err, "Err at getSomeIP()");
     });
@@ -129,5 +97,27 @@ const getSomeIP = async (amountP = 1, amountQ = 3) => {
 module.exports = { getSomeIP };
 
 if (require.main === module) {
-  getSomeIP();
+  if (process.argv.length === 2) {
+    getSomeIP();
+  } else if (process.argv.length === 4) {
+    getSomeIP(Number(process.argv[2]), Number(process.argv[3]));
+  } else if (process.argv.length === 6) {
+    cron.schedule(process.argv[4], () =>{
+      let p = Number(process.argv[2]);
+      const q = Number(process.argv[3]);
+      let pqarray = [];
+
+      while (p + 99 < q) {
+        pqarray.push([p, p + 99]);
+        p += 100;
+      }
+      pqarray.push([p, q]);
+
+      pqarray.map((pq) => {
+        getSomeIP(pq[0], pq[1]);
+      });
+    });
+
+    cron.schedule(process.argv[5], () => process.kill(process.pid, 'SIGTERM'));
+  }
 }

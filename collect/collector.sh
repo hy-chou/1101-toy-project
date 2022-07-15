@@ -16,17 +16,23 @@ fi
 DD="$1"
 HH="$2"
 Hn="$3"
-CMD_LEFT="nohup node ../scheduler.js $4 $5"
+CMD_INFO="nohup node ../getSomeInfo.js $4 $5"
+CMD_IP="nohup node ../getSomeIP.js $4 $5"
 
 while [ ! ${HH} == $((${Hn}+1)) ]
 do
-    ${CMD_LEFT} " 0-19 ${HH} ${DD} * *" "30 ${HH} ${DD} * *" > /dev/null 2>&1 &
-    ${CMD_LEFT} "20-39 ${HH} ${DD} * *" "50 ${HH} ${DD} * *" > /dev/null 2>&1 &
+    ${CMD_INFO} " 0     0 ${HH} ${DD} * *" "10 ${HH} ${DD} * *" > /dev/null 2>&1 &
+
+    ${CMD_IP} "30  0-19 ${HH} ${DD} * *" "30 ${HH} ${DD} * *" > /dev/null 2>&1 &
+    ${CMD_IP} "30 20-39 ${HH} ${DD} * *" "50 ${HH} ${DD} * *" > /dev/null 2>&1 &
     if [ ${HH} != 23 ] ; then
-        ${CMD_LEFT} "40-59 ${HH} ${DD} * *" "10 $((${HH}+1)) ${DD} * *" > /dev/null 2>&1 &
+        ${CMD_IP} "30 40-59 ${HH} ${DD} * *" "10 $((${HH}+1)) ${DD} * *" > /dev/null 2>&1 &
         HH="$((${HH}+1))"
     else
-        ${CMD_LEFT} "40-59 23 ${DD} * *" "10 0 $((${DD}+1)) * *" > /dev/null 2>&1 &
+        ${CMD_IP} "30 40-59 23 ${DD} * *"    "10 0 $((${DD}+1)) * *" > /dev/null 2>&1 &
+
+        sleep 1
+        echo "all done."
         exit 0
     fi
 done

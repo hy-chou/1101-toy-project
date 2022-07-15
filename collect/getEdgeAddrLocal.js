@@ -89,11 +89,13 @@ function getEdgeAddr(channel) {
       return ip;
     })
     .catch((error) => {
-      if (error.isAxiosError || error.name === "StreamInfoCacheError") {
-        throw error;
-      } else {
-        throw new getAddrError(error.message);
-      }
+      handleError(error, `@getEdgeAddr, ${channel}`);
+      return error.message;
+      // if (error.isAxiosError || error.name === "StreamInfoCacheError") {
+      //   throw error;
+      // } else {
+      //   throw new getAddrError(error.message);
+      // }
     });
 }
 

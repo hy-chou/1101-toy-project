@@ -1,6 +1,9 @@
 const API = require("../../Jujuby/Prober/src/Api.js");
 const fs = require("fs");
 const path = require("path");
+const process = require("process");
+const cron = require("node-cron");
+const { getSomeIP } = require("./getSomeIP.js");
 
 const handleError = (err, content, filename = "error.err") => {
   const msg = new Date().toISOString() + "\t" + content + "\t" + err + "\n";
@@ -13,11 +16,9 @@ const pullInfo = async (amountP, amountQ) => {
   let cursor = "";
 
   while (N > 0){
-    // let n = (N > 100) ? 100 : N;
     N -= 100;
 
     const response = await API.twitchAPI("/helix/streams", {
-      // first: n,
       first: 100,
       after: cursor,
     });
@@ -30,41 +31,6 @@ const pullInfo = async (amountP, amountQ) => {
   }
 
   return records.slice(amountP - amountQ - 1);
-
-  // let P = amountP - 1;
-  // let N = amountQ - amountP + 1;
-  // const records = [];
-  // let cursor = "";
-
-  // while (P > 0) {
-  //   let n = P >= 100 ? 100 : P;
-  //   P -= 100;
-
-  //   const response = await API.twitchAPI("/helix/streams", {
-  //     first: n,
-  //     after: cursor,
-  //   });
-  //   const liveChannels = response.data.data;
-
-  //   if (liveChannels.length === 0) break;
-  //   cursor = response.data.pagination.cursor;
-  // }
-  // while (N > 0) {
-  //   let n = N >= 100 ? 100 : N;
-  //   N -= 100;
-
-  //   const response = await API.twitchAPI("/helix/streams", {
-  //     first: n,
-  //     after: cursor,
-  //   });
-  //   const liveChannels = response.data.data;
-
-  //   if (liveChannels.length === 0 || records.length >= amountQ - amountP + 1)
-  //     break;
-  //   liveChannels.map((data) => records.push(data));
-  //   cursor = response.data.pagination.cursor;
-  // }
-  // return records;
 };
 
 const chunkInfo = async (longrecords, amountP, amountQ) => {
@@ -111,15 +77,35 @@ const writeInfo = async (records, amountP, amountQ) => {
   }
 };
 
-const getSomeInfo = async (amountP = 1, amountQ = 3) => {
+const getSomeInfo = async (amountP = 1, amountQ = 314) => {
   return pullInfo(amountP, amountQ)
     .then((records) => chunkInfo(records, amountP, amountQ))
-    // .then((records) => writeInfo(records, amountP, amountQ))
     .catch((err) => handleError(err, "@ getSomeInfo()"));
 };
 
 module.exports = { getSomeInfo };
 
 if (require.main === module) {
-  getSomeInfo();
+  if (process.argv.length === 2) {
+    getSomeInfo();
+  } else if (process.argv.length === 4) {
+    getSomeInfo(Number(process.argv[2]), Number(process.argv[3]));
+  } else if (process.argv.length === 6) {
+    cron.schedule(process.argv[4], async () => {
+      let p = Number(process.argv[2]);
+      const q = Number(process.argv[3]);
+      let pqarray = [];
+
+      await getSomeInfo(p, q);
+      while (p + 99 < q) {
+        pqarray.push([p, p + 99]);
+        p += 100;
+      }
+      pqarray.push([p, q]);
+      pqarray.map((pq) => {
+        getSomeIP(pq[0], pq[1]);
+      });
+    });
+    cron.schedule(process.argv[5], () => process.kill(process.pid, 'SIGTERM'));
+  }
 }
