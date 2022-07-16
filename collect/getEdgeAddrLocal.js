@@ -3,6 +3,17 @@ const m3u8Parser = require("m3u8-parser");
 const API = require("../../Jujuby/Prober/src/Api.js");
 const { lookupStreamCache } = require("../../Jujuby/Prober/Cache/StreamInfoCache.js");
 const { lookupDNSCache } = require("../../Jujuby/Prober/Cache/DNSCache.js");
+const fs = require("fs");
+const path = require("path");
+const process = require("process");
+
+
+const handleError = async (err, location) => {
+  const ts = new Date().toISOString();
+  const lines = ts + "\t" + location + "\t" + err + "\n";
+
+  fs.appendFileSync(path.join(process.cwd(), "error.err"), lines);
+}
 
 class getAddrError extends Error {
   constructor(message) {
