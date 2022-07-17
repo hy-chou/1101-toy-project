@@ -4,86 +4,89 @@ const cron = require("node-cron");
 const process = require("process");
 const API = require("../../Jujuby/Prober/src/Api.js");
 
+
 const handleError = async (err, location) => {
   const ts = new Date().toISOString();
-  const lines = ts + "\t" + location + "\t" + err + "\n";
+  const lines = `${ts}\t${location}\t${err}\n`;
 
   fs.appendFileSync(path.join(process.cwd(), "error.err"), lines);
-}
+};
 
 const getAPageOfStreams = async (cursor="") => {
-  const response = await API.twitchAPI("/helix/streams", {
+  return API.twitchAPI("/helix/streams", {
     first: 100,
     after: cursor,
-  });
+  })
+  .then((response) => {
+    writeRaw(response.data);
+    return response.data;
+  })
+  .catch((err) => handleError(err, "@ getAPageOfStreams()"))
+};
 
-  const ts = new Date().toISOString();
+const writeRaw = (data) => {
   const rawPath = path.join(process.cwd(), `raw.json.tsv`);
-  const rawLines = ts + "\t" +JSON.stringify(response.data) + "\n";
+  const lines = new Date().toISOString() + "\t" +JSON.stringify(data) + "\n";
 
-  fs.appendFile(rawPath, rawLines, (err) => {
-    if (err) handleError(err, "@getAPageOfStreams");
-  });
+  try {
+    fs.appendFileSync(rawPath, lines);
+  } catch (err) {
+    handleError(err, "@ writeRaw()");
+  }
+};
 
-  return response.data
-}
+const writeUserLogins = async (p, ulogins) => {
+  const ulgPath = path.join(process.cwd(), `p${p}.ulg.tsv`);
+  let lines = new Date().toISOString() + "\n";
+
+  ulogins.map(ulogin => lines += ulogin + "\t");
+  lines = lines.slice(0, -1) + "\n";
+
+  try {
+    fs.appendFileSync(ulgPath, lines);
+  } catch (err) {
+    handleError(err, "@writeUserLogins()");
+  }
+};
 
 const getUserLogins = async (p1=1, pn=1) => {
   let p = 1;
-  let ulogins = [];
   let data = await getAPageOfStreams();
-  let cursor = data.pagination.cursor;
 
   while (p < p1) {
     p += 1;
-    data = await getAPageOfStreams(cursor);
-    cursor = data.pagination.cursor;
+    data = await getAPageOfStreams(data.pagination.cursor);
   }
-  data.data.map((item) => ulogins.push(item.user_login));
-  writeUserLogins(ulogins.slice(), p);
+  writeUserLogins(p, data.data.map((item) => item.user_login));
 
   while (p < pn) {
     p += 1;
-    ulogins = [];
-    data = await getAPageOfStreams(cursor);
-    cursor = data.pagination.cursor;
-    data.data.map(item => ulogins.push(item.user_login));
-    writeUserLogins(ulogins.slice(), p);
+    data = await getAPageOfStreams(data.pagination.cursor);
+    writeUserLogins(p, data.data.map((item) => item.user_login));
   }
-}
-
-const writeUserLogins = async (ulogins, p) => {
-  const ts = new Date().toISOString();
-  let lines = "";
-
-  ulogins.map(ulogin => lines += "\t" + String(ulogin));
-  lines = ts + "\n" + lines.substring(1) + "\n";
-
-  const uloginsFileName = `ulogins${p}.tsv`;
-  const uloginsFilePath = path.join(process.cwd(), uloginsFileName);
-
-  console.log(lines.substring(0, 80) + "...");
-
-  try {
-    fs.appendFileSync(uloginsFilePath, lines);
-  } catch (err) {
-    handleError(err, "@writeUserLogins, ulogins.tsv");
-  }
-}
+};
 
 module.exports = { getUserLogins };
 
 if (require.main === module) {
-  if (process.argv.length === 2) {
-    getUserLogins()
-    .then(() => process.kill(process.pid, 'SIGTERM'));
-  } else if (process.argv.length === 4) {
-    getUserLogins(Number(process.argv[2]), Number(process.argv[3]))
-    .then(() => process.kill(process.pid, 'SIGTERM'));
-  } else if (process.argv.length === 6) {
-    cron.schedule(process.argv[4], () => {
-      getUserLogins(Number(process.argv[2]), Number(process.argv[3]))
-    });
-    cron.schedule(process.argv[5], () => process.kill(process.pid, 'SIGTERM'));
+  const pargv = process.argv;
+  const stopProcess = () => process.kill(process.pid, 'SIGTERM');
+
+  switch (pargv.length) {
+    case 2:
+      getUserLogins()
+      .then(stopProcess);
+      break;
+    case 4:
+      getUserLogins(Number(pargv[2]), Number(pargv[3]))
+      .then(stopProcess);
+      break;
+    case 6:
+      cron.schedule(pargv[4], () => getUserLogins(Number(pargv[2]), Number(pargv[3])));
+      cron.schedule(pargv[5], stopProcess);
+      break;
+    default:
+      console.log("Error:  wrong argv")
+      stopProcess();
   }
 }

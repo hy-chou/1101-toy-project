@@ -3,53 +3,56 @@ const path = require("path");
 const cron = require("node-cron");
 const process = require("process");
 const { getEdgeAddr } = require("./getEdgeAddrLocal.js");
+// const { getUserLogins } = require("./getActiveStreams.js");
 
-const handleDelay = async () => new Promise((resolve) => setTimeout(resolve, 1000));
 
 const handleError = async (err, location) => {
   const ts = new Date().toISOString();
-  const lines = ts + "\t" + location + "\t" + err + "\n";
+  const lines = `${ts}\t${location}\t${err}\n`;
 
   fs.appendFileSync(path.join(process.cwd(), "error.err"), lines);
-}
+};
+
+const waitAMinute = () => new Promise(resolve => setTimeout(resolve, 1000));
+
+const calcDts = (ts1) => (new Date() - ts1) / 1000;
 
 const readUserLogins = async (p) => {
-  let lines = "";
-  let channels = [];
-  const filename = `ulogins${p}.tsv`;
-  const filepath = path.join(process.cwd(), filename);
-
+  const ulgPath = path.join(process.cwd(), `p${p}.ulg.tsv`);
   const ts1 = new Date();
-  while (!fs.existsSync(filepath)) {
-    await handleDelay();
-    handleError(`page ${p} waited for ${(new Date() - ts1)/1000} sec`, "@readUserLogins");
-    if ((new Date() - ts1) > 60000) {
-      handleError(`page ${p} stopped waiting after a minute`, "@readUserLogins");
-      return channels;
+
+  while (!fs.existsSync(ulgPath)) {
+    await waitAMinute();
+    handleError(`p.${p} waited ${calcDts(ts1)} sec`, "@ readUserLogins()");
+
+    if (calcDts(ts1) > 60) {
+      handleError(`page ${p} stopped waiting`, "@ readUserLogins()");
+      return [];
     }
+    // if (calcDts(ts1) > Math.max(10, p * 0.3)) {
+    //   handleError(`self getUserLogins(${p}) after ${calcDts(ts1)} sec`,"@ readUserLogins()");
+    //   await getUserLogins(p);
+    //   handleError(`p.${p} waited ${calcDts(ts1)} sec`, "@ readUserLogins()");
+    // }
   }
 
-  lines = fs.readFileSync(filepath, "utf8");
-  lines = lines.split("\n");
-  channels = lines[lines.length - 2].split("\t");
+  let lines = fs.readFileSync(ulgPath, "utf8").split("\n");
 
-  return channels;
-}
+  return lines[lines.length - 2].split("\t");
+};
 
 const writeEdge = async (channel, ts1, addr) => {
   const dts = (new Date() - ts1)/1000;
-  const ts2H = ts1.toISOString().substring(0, 13);
+  const ts2H = ts1.toISOString().slice(0, 13);
   const lines = ts1.toISOString() + "\t" + addr + "\t" + dts + "\n";
-
-  const fileName = ts2H + channel + ".tsv";
-  const filePath = path.join(process.cwd(), fileName);
+  const tsvPath = path.join(process.cwd(), `${ts2H}${channel}.tsv`);
 
   try {
-    fs.appendFileSync(filePath, lines);
+    fs.appendFileSync(tsvPath, lines);
   } catch (err) {
     handleError(err, "@writeEdge");
   }
-}
+};
 
 const getEdgeFromUserLogin = async (channel) => {
   const ts1 = new Date();
@@ -68,27 +71,35 @@ const collectEdgesOnPage = async (p, burstMode=false) => {
     (p, _, i) => p.then(() => getEdgeFromUserLogin(channels[i])),
     Promise.resolve()
   )
-}
+};
 
-const main = async (p1=1, pn=1, burstMode=false) => {
-  let p = p1;
+const main = async (p1=1, pn=p1, burstMode=false) => {
   let ps = [p1];
 
-  while (ps[ps.length - 1] < pn) ps.push(++p);
+  while (ps[ps.length - 1] < pn) ps.push(ps[ps.length - 1] + 1);
 
-  Promise.all(ps.map(p => collectEdgesOnPage(p, burstMode)))
-  // .then(() => process.kill(process.pid, 'SIGTERM'))
-}
+  return Promise.all(ps.map(p => collectEdgesOnPage(p, burstMode)));
+};
 
 if (require.main === module) {
-  if (process.argv.length === 2) {
-    main();
-  } else if (process.argv.length === 4) {
-    main(Number(process.argv[2]), Number(process.argv[3]));
-  } else if (process.argv.length === 6) {
-    cron.schedule(process.argv[4], () => {
-      main(Number(process.argv[2]), Number(process.argv[3]));
-    });
-    cron.schedule(process.argv[5], () => process.kill(process.pid, 'SIGTERM'));
+  const pargv = process.argv;
+  const stopProcess = () => process.kill(process.pid, 'SIGTERM');
+
+  switch (pargv.length) {
+    case 2:
+      main()
+      .then(stopProcess);
+      break;
+    case 4:
+      main(Number(pargv[2]), Number(pargv[3]))
+      .then(stopProcess);
+      break;
+    case 6:
+      cron.schedule(pargv[4], () => main(Number(pargv[2]), Number(pargv[3])));
+      cron.schedule(pargv[5], stopProcess);
+      break;
+    default:
+      console.log("Error:  wrong argv")
+      stopProcess();
   }
 }
