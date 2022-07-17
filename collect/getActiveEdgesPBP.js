@@ -3,6 +3,7 @@ const path = require("path");
 const cron = require("node-cron");
 const process = require("process");
 const { getEdgeAddr } = require("./getEdgeAddrLocal.js");
+// const { getUserLogins } = require("./getActiveStreams.js");
 
 
 const handleError = async (err, location) => {
@@ -16,18 +17,23 @@ const waitAMinute = () => new Promise(resolve => setTimeout(resolve, 1000));
 
 const calcDts = (ts1) => (new Date() - ts1) / 1000;
 
-const readUserLogins = async (c) => {
-  const ulgPath = path.join(process.cwd(), `ulg${c}.tsv`);
+const readUserLogins = async (p) => {
+  const ulgPath = path.join(process.cwd(), `p${p}.ulg.tsv`);
   const ts1 = new Date();
 
   while (!fs.existsSync(ulgPath)) {
     await waitAMinute();
-    handleError(`g.${c} waited ${calcDts(ts1)} sec`, "@ readUserLogins()");
+    handleError(`p.${p} waited ${calcDts(ts1)} sec`, "@ readUserLogins()");
 
     if (calcDts(ts1) > 60) {
-      handleError(`g.${c} stopped waiting`, "@ readUserLogins()");
+      handleError(`page ${p} stopped waiting`, "@ readUserLogins()");
       return [];
     }
+    // if (calcDts(ts1) > Math.max(10, p * 0.3)) {
+    //   handleError(`self getUserLogins(${p}) after ${calcDts(ts1)} sec`,"@ readUserLogins()");
+    //   await getUserLogins(p);
+    //   handleError(`p.${p} waited ${calcDts(ts1)} sec`, "@ readUserLogins()");
+    // }
   }
 
   let lines = fs.readFileSync(ulgPath, "utf8").split("\n");
@@ -44,37 +50,35 @@ const writeEdge = async (channel, ts1, addr) => {
   try {
     fs.appendFileSync(tsvPath, lines);
   } catch (err) {
-    handleError(err, "@ writeEdge()");
+    handleError(err, "@writeEdge");
   }
 };
 
-const getEdgeFromUserLogin = async (ulogin) => {
+const getEdgeFromUserLogin = async (channel) => {
   const ts1 = new Date();
 
-  await getEdgeAddr(ulogin)
-  .then((addr) => writeEdge(ulogin, ts1, addr))
-  .catch((error) => writeEdge(ulogin, ts1, error.message));
+  await getEdgeAddr(channel)
+  .then((addr) => writeEdge(channel, ts1, addr))
+  .catch((error) => writeEdge(channel, ts1, error.message));
 };
 
-const collectEdgesOfGroup = async (c, burstMode=false) => {
-  const ulogins = (await readUserLogins(c));
+const collectEdgesOnPage = async (p, burstMode=false) => {
+  const channels = (await readUserLogins(p));
 
-  if (burstMode) return Promise.all(ulogins.map(item => getEdgeFromUserLogin(item)))
+  if (burstMode) return Promise.all(channels.map(channel => getEdgeFromUserLogin(channel)))
 
-  return ulogins.reduce(
-    (preVal, _, i) => preVal.then(() => getEdgeFromUserLogin(ulogins[i])),
+  return channels.reduce(
+    (p, _, i) => p.then(() => getEdgeFromUserLogin(channels[i])),
     Promise.resolve()
   )
 };
 
-const main = async (c1=1, cn=100, groupSize=100, burstMode=false) => {
-  let cs = [c1];
+const main = async (p1=1, pn=p1, burstMode=false) => {
+  let ps = [p1];
 
-  while (cs[cs.length - 1] + groupSize - 1 < cn) {
-    cs.push(cs[cs.length - 1] + groupSize);
-  }
+  while (ps[ps.length - 1] < pn) ps.push(ps[ps.length - 1] + 1);
 
-  return Promise.all(cs.map(c => collectEdgesOfGroup(c, burstMode)));
+  return Promise.all(ps.map(p => collectEdgesOnPage(p, burstMode)));
 };
 
 if (require.main === module) {

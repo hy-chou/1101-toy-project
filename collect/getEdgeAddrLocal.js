@@ -100,7 +100,7 @@ function getEdgeAddr(channel) {
       return ip;
     })
     .catch((error) => {
-      handleError(error, `@getEdgeAddr, ${channel}`);
+      handleError(error, `@ getEdgeAddr(), ${channel}`);
       return error.message;
       // if (error.isAxiosError || error.name === "StreamInfoCacheError") {
       //   throw error;

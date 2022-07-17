@@ -35,8 +35,8 @@ const writeRaw = (data) => {
   }
 };
 
-const writeUserLogins = async (c, ulogins) => {
-  const ulgPath = path.join(process.cwd(), `ulg${c}.tsv`);
+const writeUserLogins = async (p, ulogins) => {
+  const ulgPath = path.join(process.cwd(), `p${p}.ulg.tsv`);
   let lines = new Date().toISOString() + "\n";
 
   ulogins.map(ulogin => lines += ulogin + "\t");
@@ -49,27 +49,20 @@ const writeUserLogins = async (c, ulogins) => {
   }
 };
 
-const getUserLogins = async (c1=1, cn=100, groupSize=100) => {
-  let cSliced = 0;
+const getUserLogins = async (p1=1, pn=1) => {
+  let p = 1;
   let data = await getAPageOfStreams();
-  let grandList = data.data.map((item) => item.user_login);
 
-  while (grandList.length < c1) {
+  while (p < p1) {
+    p += 1;
     data = await getAPageOfStreams(data.pagination.cursor);
-    grandList = grandList.concat(data.data.map((item) => item.user_login));
   }
+  writeUserLogins(p, data.data.map((item) => item.user_login));
 
-  grandList = grandList.slice(c1 - 1);
-  cSliced += c1 - 1;
-
-  while (cSliced < cn) {
-    while (grandList.length < groupSize) {
-      data = await getAPageOfStreams(data.pagination.cursor);
-      grandList = grandList.concat(data.data.map((item) => item.user_login));
-    }
-    writeUserLogins(cSliced + 1, grandList.slice(0, Math.min(groupSize, cn - cSliced)))
-    grandList = grandList.slice(groupSize);
-    cSliced += groupSize;
+  while (p < pn) {
+    p += 1;
+    data = await getAPageOfStreams(data.pagination.cursor);
+    writeUserLogins(p, data.data.map((item) => item.user_login));
   }
 };
 
