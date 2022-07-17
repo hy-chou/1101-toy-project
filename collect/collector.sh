@@ -8,8 +8,8 @@ if [ "$5" == "" ] ; then
     echo -e "DD\tdate (local)"
     echo -e "H1\tfirst hour (local)"
     echo -e "Hn\tlast hour (local)"
-    echo -e "P1\tstart from the P1-th channel"
-    echo -e "Pn\tto the Pn-th channel"
+    echo -e "C1\tstart from the C1-th channel"
+    echo -e "Cn\tto the Cn-th channel"
     exit 0
 fi
 
