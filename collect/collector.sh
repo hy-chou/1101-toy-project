@@ -3,7 +3,7 @@
 if [ "$5" == "" ] ; then
     echo "usage:  "
     echo "1. cd TARGET_DIR"
-    echo "2. bash ../collector.sh DD H1 Hn P1 Pn"
+    echo "2. bash ../collector.sh DD H1 Hn C1 Cn"
     echo ""
     echo -e "DD\tdate (local)"
     echo -e "H1\tfirst hour (local)"
@@ -21,7 +21,7 @@ CMD_EDGE="nohup node ../getActiveEdges.js   $4 $5"
 
 while [ ! ${HH} == $((${Hn}+1)) ]
 do
-    ${CMD_STRM} "    0 ${HH} ${DD} * *" " 1 ${HH} ${DD} * *" > /dev/null 2>&1 &
+    ${CMD_STRM} "    0 ${HH} ${DD} * *" "10 ${HH} ${DD} * *" > /dev/null 2>&1 &
 
     ${CMD_EDGE} " 0-19 ${HH} ${DD} * *" "30 ${HH} ${DD} * *" > /dev/null 2>&1 &
     ${CMD_EDGE} "20-39 ${HH} ${DD} * *" "50 ${HH} ${DD} * *" > /dev/null 2>&1 &
