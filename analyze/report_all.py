@@ -5,11 +5,11 @@ from report_rtt import get_rtt_avg
 
 
 if __name__ == '__main__':
-    lines = "BW_max (Mb)\tBW_avg (MB)\tCPU_avg (%)\tMemory_avg (MiB)\tRTT_avg (sec)\n"
+    lines = "BW_max (Mb)\t\t\tBW_avg (MB)\t\t\tCPU_avg (%)\tMemory_avg (MiB)\tRTT_avg (sec)\n"
     bws, bwr, bwt = get_bw_max()
-    lines += f'{bws}/{bwr}/{bwt}\t'
+    lines += f'{bws}\t{bwr}\t{bwt}\t'
     bws, bwr, bwt = get_bw_avg()
-    lines += f'{bws:.2f}/{bwr:.2f}/{bwt:.2f}\t'
+    lines += f'{bws:.2f}\t{bwr:.2f}\t{bwt:.2f}\t'
     cpu = get_cpu_avg()
     lines += f'{cpu:.1f}\t'
     mem = get_memory_avg()
