@@ -53,6 +53,7 @@ const getUserLogins = async (c1=1, cn=100, groupSize=100) => {
   let cSliced = 0;
   let data = await getAPageOfStreams();
   let grandList = data.data.map((item) => item.user_login);
+  let toWriteList = [];
 
   while (grandList.length < c1) {
     data = await getAPageOfStreams(data.pagination.cursor);
@@ -67,10 +68,12 @@ const getUserLogins = async (c1=1, cn=100, groupSize=100) => {
       data = await getAPageOfStreams(data.pagination.cursor);
       grandList = grandList.concat(data.data.map((item) => item.user_login));
     }
-    writeUserLogins(cSliced + 1, grandList.slice(0, Math.min(groupSize, cn - cSliced)))
+    toWriteList.push([cSliced + 1, grandList.slice(0, Math.min(groupSize, cn - cSliced))]);
     grandList = grandList.slice(groupSize);
     cSliced += groupSize;
   }
+
+  toWriteList.map((item) => writeUserLogins(item[0], item[1]));
 };
 
 module.exports = { getUserLogins };
