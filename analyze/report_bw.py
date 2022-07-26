@@ -70,7 +70,8 @@ def get_bw_avg():
 
 
 if __name__ == '__main__':
+    print(f'\tsent\treceiv.\ttotal')
     bws, bwr, bwt = get_bw_max()
-    print(f'BW_max:\t{bws}/{bwr}/{bwt} Mb')
+    print(f'BW_max\t{bws:>7}\t{bwr:>7}\t{bwt:>7}\tMb')
     bws, bwr, bwt = get_bw_avg()
-    print(f'BW_avg:\t{bws:.2f}/{bwr:.2f}/{bwt:.2f} MB')
+    print(f'  _avg\t{bws:>7.1f}\t{bwr:>7.1f}\t{bwt:>7.1f}\tMB/30sec')

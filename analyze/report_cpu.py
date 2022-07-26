@@ -1,7 +1,7 @@
 from read_txt import read_top
 
 
-def get_cpu_avg():
+def get_cpu():
     cpu = []
     lines = read_top()
 
@@ -14,9 +14,10 @@ def get_cpu_avg():
                 cpu.append(float(s))
                 break
 
-    return sum(cpu)/len(cpu)
+    return sum(cpu)/len(cpu), max(cpu)
 
 
 if __name__ == '__main__':
-    cpu = get_cpu_avg()
-    print(f'CPU_avg:\t{cpu:.1f} %')
+    cpu = get_cpu()
+    print(f'CPU_avg\t{cpu[0]:>7.1f}\t%')
+    print(f'   _max\t{cpu[1]:>7.1f}\t%')
