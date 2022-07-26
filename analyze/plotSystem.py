@@ -130,7 +130,7 @@ def plotBWvTime(type='Cumulative'):
     ax.set_title(cwd)
     ax.set_xlabel('Time')
     if type == 'Cumulative':
-        ax.set_ylabel('1 minute Cumulative Bandwidth (MB)')
+        ax.set_ylabel('Cumulative Bandwidth in 30 sec (MB)')
     elif type == 'Peak':
         ax.set_ylabel('Peak Bandwidth (Mb)')
     ax.legend()
