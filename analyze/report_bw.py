@@ -24,7 +24,10 @@ def rescale(s):
 
 def get_bw_max():
     bws, bwr, bwt = 0, 0, 0
+
     lines = read_iftop()
+    if lines == []:
+        return -1, -1, -1
 
     for line in lines:
         if line[:4] != "Peak":
@@ -46,7 +49,10 @@ def get_bw_max():
 
 def get_bw_avg():
     bws, bwr, bwt = [], [], []
+
     lines = read_iftop()
+    if lines == []:
+        return -1, -1, -1
 
     for line in lines:
         if line[:4] != "Cumu":

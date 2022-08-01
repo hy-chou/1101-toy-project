@@ -2,14 +2,20 @@ from datetime import datetime
 
 
 def read_top():
-    with open('./txts/top.txt') as f:
-        lines = f.readlines()
-    return lines
+    lines = []
+    try:
+        with open('./txts/top.txt') as f:
+            lines = f.readlines()
+    finally:
+        return lines
 
 def read_iftop():
-    with open('./txts/iftop.txt') as f:
-        lines = f.readlines()
-    return lines
+    lines = []
+    try:
+        with open('./txts/iftop.txt') as f:
+            lines = f.readlines()
+    finally:
+        return lines
 
 def read_date():
     with open('./txts/date.txt') as f:
