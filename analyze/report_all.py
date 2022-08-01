@@ -17,6 +17,6 @@ if __name__ == '__main__':
     mem = get_memory()
     lines += f'{mem[0]:.0f}\t{mem[1]:.0f}\t'
     rtt = get_rtt()
-    lines += f'{rtt[0]:.0f}\t{rtt[1]:.0f}\t'
+    lines += f'{rtt[0]:.3f}\t{rtt[1]:.3f}\t'
 
     print(lines)

@@ -3,7 +3,10 @@ from read_txt import read_top
 
 def get_memory():
     mem = []
+
     lines = read_top()
+    if lines == []:
+        return -1, -1
 
     for line in lines:
         if not line.startswith('MiB Mem :'):
