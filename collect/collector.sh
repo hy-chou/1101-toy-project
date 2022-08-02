@@ -21,12 +21,11 @@ CMD_EDGE="nohup node ../getActiveEdges.js   $4 $5"
 
 while [ ! ${HH} == $((${Hn}+1)) ]
 do
-    ${CMD_STRM} "    0 ${HH} ${DD} * *" " 5 ${HH} ${DD} * *" > /dev/null 2>&1 &
-    ${CMD_STRM} "   10 ${HH} ${DD} * *" "15 ${HH} ${DD} * *" > /dev/null 2>&1 &
-    ${CMD_STRM} "   20 ${HH} ${DD} * *" "25 ${HH} ${DD} * *" > /dev/null 2>&1 &
-    ${CMD_STRM} "   30 ${HH} ${DD} * *" "35 ${HH} ${DD} * *" > /dev/null 2>&1 &
-    ${CMD_STRM} "   40 ${HH} ${DD} * *" "45 ${HH} ${DD} * *" > /dev/null 2>&1 &
-    ${CMD_STRM} "   50 ${HH} ${DD} * *" "55 ${HH} ${DD} * *" > /dev/null 2>&1 &
+    ${CMD_STRM} "    0 ${HH} ${DD} * *" " 6 ${HH} ${DD} * *" > /dev/null 2>&1 &
+    ${CMD_STRM} "   12 ${HH} ${DD} * *" "18 ${HH} ${DD} * *" > /dev/null 2>&1 &
+    ${CMD_STRM} "   24 ${HH} ${DD} * *" "30 ${HH} ${DD} * *" > /dev/null 2>&1 &
+    ${CMD_STRM} "   36 ${HH} ${DD} * *" "42 ${HH} ${DD} * *" > /dev/null 2>&1 &
+    ${CMD_STRM} "   48 ${HH} ${DD} * *" "54 ${HH} ${DD} * *" > /dev/null 2>&1 &
 
     ${CMD_EDGE} " 0-19 ${HH} ${DD} * *" "30 ${HH} ${DD} * *" > /dev/null 2>&1 &
     ${CMD_EDGE} "20-39 ${HH} ${DD} * *" "50 ${HH} ${DD} * *" > /dev/null 2>&1 &
