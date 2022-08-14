@@ -17,7 +17,4 @@ cat ulgs/* | wc -w
 echo
 cat tsvs/* | wc -l
 echo
-cat tsvs/* | cut -f 2 | sort | uniq -c
-echo
-sleep 1
-echo "all done."
+cat tsvs/* | cut -f 2 | grep -v [0-9][[:punct:]][0-9] | sort | uniq -c
