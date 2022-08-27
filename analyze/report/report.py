@@ -2,6 +2,7 @@ from os import listdir
 from statistics import mean
 
 from report_iftop import read_iftops
+from report_rtt import read_rtts
 from report_top import read_tops
 
 
@@ -18,6 +19,7 @@ def report():
     hours = listdir('./tsvs')
     iftops = read_iftops(hours)
     tops = read_tops(hours)
+    rtts = read_rtts(hours)
 
     for h in hours:
         print(h)
@@ -31,8 +33,8 @@ def report():
         print_shorter('cpu_max', max(tops[h]['cpus']))
         print_shorter('mem_avg', mean(tops[h]['mems']))
         print_shorter('mem_max', max(tops[h]['mems']))
-        print_shorter('rtt_avg')
-        print_shorter('rtt_max')
+        print_shorter('rtt_avg', mean(rtts[h]))
+        print_shorter('rtt_max', max(rtts[h]))
 
 
 if __name__ == '__main__':
