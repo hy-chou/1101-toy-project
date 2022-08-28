@@ -1,20 +1,17 @@
 #!/bin/bash
 
 du -hd 0
-echo
-mkdir tsvs
-mkdir txts
-mkdir ulgs
-mv 2*    tsvs/
-mv *.txt txts/
-mv u*v   ulgs/
-echo
-python3 ../../analyze/report_all.py
-echo
-ls ulgs/ | wc -l
-echo
-cat ulgs/* | wc -w
-echo
-cat tsvs/* | wc -l
-echo
-cat tsvs/* | cut -f 2 | grep -v [0-9][[:punct:]][0-9] | sort | uniq -c
+echo -e "\n-=-\n"
+
+python3 ../../analyze/report/report.py
+echo -e "\n-=-\n"
+
+echo -e "             \tULG\tULGS\tTSVS\tERRS"
+for h in $(ls ulgs)
+do
+	ULG=$(ls ulgs/$h | wc -l)
+	ULGS=$(cat ulgs/$h/* | wc -w)
+	TSVS=$(find tsvs/$h -name "*.tsv" | xargs cat | wc -l)
+	ERRS=$(find tsvs/$h -name "*.tsv" | xargs cat | cut -f 2 | grep -v "[0-9][.][0-9]\+[.][0-9]\+[.][0-9]" | wc -l)
+	echo -e "$h\t${ULG}\t${ULGS}\t${TSVS}\t${ERRS}"
+done
