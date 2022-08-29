@@ -3,22 +3,20 @@
 if [ "$2" == "" ] ; then
     echo "usage:  "
     echo "1. sudo su"
-    echo "2. nohup bash ../measure.sh SLEEP_TIME END_HOUR > /dev/null 2>&1 &"
+    echo "2. nohup bash ../measure.sh SLEEP_TIME END_MIN > /dev/null 2>&1 &"
     echo ""
     echo -e "SLEEP_TIME\tstart measuring after SLEEP_TIME, eg. 31m"
-    echo -e "END_HOUR\tstop measuring at END_HOUR, eg. 2022-08-26T23"
+    echo -e "END_MIN \tstop measuring at END_MIN (local time), eg. 2022-08-27T17:58"
     exit 0
 fi
 
 sleep "$1"
 
-mkdir -p txts
-mkdir -p txts/tops
-mkdir -p txts/iftops
+mkdir -p txts/tops txts/iftops
 
-while [ $(date --iso-8601="seconds" | cut -d : -f 1) != "$2" ]
+while [ $(date --iso-8601="minutes" | head -c ${#2}) != "$2" ]
 do
-    TS=$(date --iso-8601="seconds")
+    TS=$(date -u --iso-8601="seconds")
     TS2H=$(echo ${TS} | cut -d : -f 1)
 
     echo ${TS} >> txts/tops/${TS2H}top.txt

@@ -1,59 +1,56 @@
-const fs = require("fs");
-const path = require("path");
 const cron = require("node-cron");
 const process = require("process");
+const { dirname } = require("node:path");
 const API = require("../../Jujuby/Prober/src/Api.js");
-
+const { mkdir, appendFile } = require("node:fs/promises");
 
 const handleError = async (err, location) => {
   const ts = new Date().toISOString();
-  const lines = `${ts}\t${location}\t${err}\n`;
+  const ts2H = ts.slice(0, 13);
+  const errPath = `errs/${ts2H}error.tsv`;
+  const lines = ts + "\t" + location + "\t" + err + "\n";
 
-  fs.appendFileSync(path.join(process.cwd(), "error.err"), lines);
+  return append(errPath, lines);
 };
 
-const getAPageOfStreams = async (cursor="") => {
+const append = async (path, data) => {
+  await mkdir(dirname(path), { recursive: true });
+  return appendFile(path, data);
+};
+
+const getAPageOfStreams = async (cursor = "") => {
   return API.twitchAPI("/helix/streams", {
     first: 100,
     after: cursor,
   })
-  .then((response) => {
-    writeRaw(response.data);
-    return response.data;
-  })
-  .catch((err) => handleError(err, "@ getAPageOfStreams()"))
-};
+    .then(async (res) => {
+      const ts = new Date().toISOString();
+      const ts2H = ts.slice(0, 13);
+      const rawPath = `raws/${ts2H}raw.json.tsv`;
+      const lines = ts + "\t" + JSON.stringify(res.data) + "\n";
 
-const writeRaw = (data) => {
-  const rawPath = path.join(process.cwd(), `raw.json.tsv`);
-  const lines = new Date().toISOString() + "\t" +JSON.stringify(data) + "\n";
-
-  try {
-    fs.appendFileSync(rawPath, lines);
-  } catch (err) {
-    handleError(err, "@ writeRaw()");
-  }
+      await append(rawPath, lines);
+      return res.data;
+    })
+    .catch((err) => handleError(err, "@ getAPageOfStreams()"));
 };
 
 const writeUserLogins = async (c, ulogins) => {
-  const ulgPath = path.join(process.cwd(), `ulg${c}.tsv`);
+  const ts2H = new Date().toISOString().slice(0, 13);
+  const ulgPath = `ulgs/${ts2H}/${ts2H}ulg${c}.tsv`;
   let lines = new Date().toISOString() + "\n";
 
-  ulogins.map(ulogin => lines += ulogin + "\t");
+  ulogins.map((ulogin) => (lines += ulogin + "\t"));
   lines = lines.slice(0, -1) + "\n";
 
-  try {
-    fs.appendFileSync(ulgPath, lines);
-  } catch (err) {
-    handleError(err, "@writeUserLogins()");
-  }
+  return append(ulgPath, lines);
 };
 
-const getUserLogins = async (c1=1, cn=100, groupSize=100) => {
+const getUserLogins = async (c1 = 1, cn = 100, groupSize = 100) => {
   let cSliced = 0;
   let data = await getAPageOfStreams();
   let grandList = data.data.map((item) => item.user_login);
-  let toWriteList = [];
+  let writingList = [];
 
   while (grandList.length < c1) {
     data = await getAPageOfStreams(data.pagination.cursor);
@@ -68,35 +65,40 @@ const getUserLogins = async (c1=1, cn=100, groupSize=100) => {
       data = await getAPageOfStreams(data.pagination.cursor);
       grandList = grandList.concat(data.data.map((item) => item.user_login));
     }
-    toWriteList.push([cSliced + 1, grandList.slice(0, Math.min(groupSize, cn - cSliced))]);
+    writingList.push(
+      writeUserLogins(
+        cSliced + 1,
+        grandList.slice(0, Math.min(groupSize, cn - cSliced))
+      )
+    );
     grandList = grandList.slice(groupSize);
     cSliced += groupSize;
   }
 
-  toWriteList.map((item) => writeUserLogins(item[0], item[1]));
+  return Promise.all(writingList);
 };
 
 module.exports = { getUserLogins };
 
 if (require.main === module) {
   const pargv = process.argv;
-  const stopProcess = () => process.kill(process.pid, 'SIGTERM');
+  const stopProcess = () => process.kill(process.pid, "SIGTERM");
 
   switch (pargv.length) {
     case 2:
-      getUserLogins()
-      .then(stopProcess);
+      getUserLogins().then(stopProcess);
       break;
     case 4:
-      getUserLogins(Number(pargv[2]), Number(pargv[3]))
-      .then(stopProcess);
+      getUserLogins(Number(pargv[2]), Number(pargv[3])).then(stopProcess);
       break;
     case 6:
-      cron.schedule(pargv[4], () => getUserLogins(Number(pargv[2]), Number(pargv[3])));
+      cron.schedule(pargv[4], () =>
+        getUserLogins(Number(pargv[2]), Number(pargv[3]))
+      );
       cron.schedule(pargv[5], stopProcess);
       break;
     default:
-      console.log("Error:  wrong argv")
+      console.log("Error:  wrong argv");
       stopProcess();
   }
 }

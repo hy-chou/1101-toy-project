@@ -1,19 +1,28 @@
 const { URL } = require("url");
+const process = require("process");
+const { dirname } = require("node:path");
 const m3u8Parser = require("m3u8-parser");
 const API = require("../../Jujuby/Prober/src/Api.js");
-const { lookupStreamCache } = require("../../Jujuby/Prober/Cache/StreamInfoCache.js");
 const { lookupDNSCache } = require("../../Jujuby/Prober/Cache/DNSCache.js");
-const fs = require("fs");
-const path = require("path");
-const process = require("process");
-
+const { mkdir, appendFile, readFile } = require("node:fs/promises");
+const {
+  lookupStreamCache,
+} = require("../../Jujuby/Prober/Cache/StreamInfoCache.js");
 
 const handleError = async (err, location) => {
   const ts = new Date().toISOString();
+  const ts2H = ts.slice(0, 13);
+  const errPath = `errs/${ts2H}error.tsv`;
   const lines = ts + "\t" + location + "\t" + err + "\n";
 
-  fs.appendFileSync(path.join(process.cwd(), "error.err"), lines);
-}
+  console.error(lines);
+  return append(errPath, lines);
+};
+
+const append = async (path, data) => {
+  await mkdir(dirname(path), { recursive: true });
+  return appendFile(path, data);
+};
 
 class getAddrError extends Error {
   constructor(message) {
@@ -85,7 +94,7 @@ function getEdgeUrl(raw) {
   return parser.manifest.segments.slice(-1).pop().uri;
 }
 
-function getEdgeAddr(channel) {
+function getEdgeAddrOri(channel) {
   return getAccessToken(channel)
     .then((token) => getMasterPlaylist(token, channel))
     .then((masterPlaylist) => parseMasterPlaylist(masterPlaylist))
@@ -109,6 +118,20 @@ function getEdgeAddr(channel) {
       // }
     });
 }
+
+const getEdgeAddr = async (channel) => {
+  return getAccessToken(channel)
+    .then((token) => getMasterPlaylist(token, channel))
+    .then((masterPlaylist) => parseMasterPlaylist(masterPlaylist))
+    .then((playlists) => getBestQualityPlaylistUri(playlists))
+    .then((uri) => getPlaylistContent(uri))
+    .then((rawContent) => new URL(getEdgeUrl(rawContent)).hostname)
+    .then((hostname) => lookupDNSCache(hostname))
+    .catch((error) => {
+      handleError(error, `@ getEdgeAddr(), ${channel}`);
+      return error.message;
+    });
+};
 
 module.exports = {
   getAccessToken,
