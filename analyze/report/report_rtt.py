@@ -22,7 +22,10 @@ if __name__ == '__main__':
     hours = listdir('./tsvs')
     rtts = read_rtts(hours)
 
-    for h in hours:
-        print(h)
-        print_shorter('rtt_avg', mean(rtts[h]))
-        print_shorter('rtt_max', max(rtts[h]))
+    print('             \trtt_avg\trtt_max')
+    for h in sorted(hours):
+        print(h, end='\t')
+        print_shorter(mean(rtts[h]))
+        print_shorter(max(rtts[h]))
+        print()
+

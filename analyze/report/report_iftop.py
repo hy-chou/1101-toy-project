@@ -47,11 +47,14 @@ if __name__ == '__main__':
     hours = list(map(lambda x: x[:13], listdir('./txts/iftops')))
     iftops = read_iftops(hours)
 
-    for h in hours:
-        print(h)
-        print_shorter('snt_max', max(iftops[h]['peaks'][0]))
-        print_shorter('rcv_max', max(iftops[h]['peaks'][1]))
-        print_shorter('ttl_max', max(iftops[h]['peaks'][2]))
-        print_shorter('snt_avg', mean(iftops[h]['cumus'][0]))
-        print_shorter('rcv_avg', mean(iftops[h]['cumus'][1]))
-        print_shorter('ttl_avg', mean(iftops[h]['cumus'][2]))
+    print('             \tsent_max\trecv_max\ttotl_max\tsent_avg\trecv_avg\ttotl_avg')
+    for h in sorted(hours):
+        print(h, end='\t')
+        print_shorter(max(iftops[h]['peaks'][0]))
+        print_shorter(max(iftops[h]['peaks'][1]))
+        print_shorter(max(iftops[h]['peaks'][2]))
+        print_shorter(mean(iftops[h]['cumus'][0]))
+        print_shorter(mean(iftops[h]['cumus'][1]))
+        print_shorter(mean(iftops[h]['cumus'][2]))
+        print()
+
