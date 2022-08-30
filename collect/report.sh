@@ -18,8 +18,8 @@ $(du -hd 0)
 
 $(python3 ../../analyze/report/report.py)
 
-## Reply Rates
-$(echo -e "             \tULG\tULGS\tTSVS\tERRS")"
+## Counts
+$(echo -e "             \tULG\tULGS\tTSVS\tERRS\tIFTOPS\tTOPS")"
 
 for h in $(ls ulgs)
 do
@@ -28,8 +28,11 @@ do
 	TSVS=$(find tsvs/$h -name "*.tsv" | xargs cat | wc -l)
 	ERRS=$(find tsvs/$h -name "*.tsv" | xargs cat | cut -f 2 | grep -v "[0-9][.][0-9]\+[.][0-9]\+[.][0-9]" | wc -l)
 
+	IFTOPS=$(cat txts/iftops/${h}iftop.txt | grep 2022 | wc -l)
+	TOPS=$(cat txts/tops/${h}top.txt | grep 2022 | wc -l)
+
 	LINES="${LINES}
-$(echo -e "$h\t${ULG}\t${ULGS}\t${TSVS}\t${ERRS}")"
+$(echo -e "$h\t${ULG}\t${ULGS}\t${TSVS}\t${ERRS}\t${IFTOPS}\t${TOPS}")"
 done
 
 echo "${LINES}" >> report.txt
