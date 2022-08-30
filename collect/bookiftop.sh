@@ -18,6 +18,8 @@ if [ $# != 1 ] ; then
     exit 0
 fi
 
+sleep 10s
+
 mkdir -p "$1/txts/iftops" && cd "$1/txts/iftops"
 
 for i in {0..1}
