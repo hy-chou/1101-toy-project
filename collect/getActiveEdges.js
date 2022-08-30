@@ -21,7 +21,7 @@ const append = async (path, data) => {
 
 const waitASecond = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
-const readUserLogins = async (c, ttl = 10) => {
+const readUserLogins = async (c, ttl = 60) => {
   const ts2H = new Date().toISOString().slice(0, 13);
   const ulgPath = `ulgs/${ts2H}/${ts2H}ulg${c}.tsv`;
   let user_logins = [];
