@@ -28,6 +28,9 @@ mkdir -p "$1/txts/tops" && cd "$1/txts/tops"
 
 for i in {0..1}
 do
+    TS=$(date -u -Iseconds)
+    TS2H=$(echo "${TS}" | cut -d : -f 1)
+
     LINES=$(top -bn 1 | head -n 5)
 
     echo "${TS}" >> ${TS2H}top.txt
