@@ -7,20 +7,18 @@ fi
 
 echo "report.sh running..."
 
-LINES="# REPORT
-$(date -Iseconds)
+LINES="# $(pwd | rev | cut -d / -f 1 | rev)"
 
-## File Space Usage
+LINES=$(echo -e "${LINES}\n\nupdated $(date -Iseconds)")
 
-$(du -hd 0)
+LINES=$(echo -e "${LINES}\n\n## du -hd")
+LINES=$(echo -e "${LINES}\n\n$(du -hd 0)")
 
-## Network & Machine
+LINES=$(echo -e "${LINES}\n\n$(python3 ../../analyze/report/report.py)")
 
-$(python3 ../../analyze/report/report.py)
-
-## Counts
-$(echo -e "             \tULG\tULGS\tTSVS\tERRS\tIFTOPS\tTOPS")"
-
+LINES=$(echo -e "${LINES}\n\n## Counts")
+LINES=$(echo -e "${LINES}\n\n\`\`\`")
+LINES=$(echo -e "${LINES}\n             \tULG\tULGS\tTSVS\tERRS\tIFTOPS\tTOPS")
 for h in $(ls ulgs)
 do
 	ULG=$(ls ulgs/$h | wc -l)
@@ -31,9 +29,9 @@ do
 	IFTOPS=$(cat txts/iftops/${h}iftop.txt | grep 2022 | wc -l)
 	TOPS=$(cat txts/tops/${h}top.txt | grep 2022 | wc -l)
 
-	LINES="${LINES}
-$(echo -e "$h\t${ULG}\t${ULGS}\t${TSVS}\t${ERRS}\t${IFTOPS}\t${TOPS}")"
+	LINES=$(echo -e "${LINES}\n$h\t${ULG}\t${ULGS}\t${TSVS}\t${ERRS}\t${IFTOPS}\t${TOPS}")
 done
+LINES=$(echo -e "${LINES}\n\n\`\`\`")
 
 echo "${LINES}" >> report.txt
 echo "${LINES}"

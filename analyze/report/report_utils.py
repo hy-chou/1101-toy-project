@@ -1,0 +1,29 @@
+def addunit(num=-1, unit='  '):
+    if num < 10 ** 3:
+        snum = str(num)[:4]
+    elif num < 10 ** 6:
+        snum = str(num/10**3)[:4]
+        unit = ' k'
+    elif num < 10 ** 9:
+        snum = str(num/10**6)[:4]
+        unit = ' M'
+    else:
+        snum = 'ERR'
+
+    if snum[-1] == '.':
+        snum = snum[:-1]
+    snum = ' ' * (4 - len(snum)) + snum
+    return snum + unit
+
+
+def rmunit(s):
+    if s[-1].isdecimal():
+        return float(s)
+    elif s[-1] == 'K' or s[-1] == 'k':
+        return float(s[:-1]) * 1000
+    elif s[-1] == 'M' or s[-1] == 'm':
+        return float(s[:-1]) * 1000000
+    elif s[-1] == 'G' or s[-1] == 'g':
+        return float(s[:-1]) * 1000000000
+    else:
+        raise Exception(f'Undefined unit in "{s}".')

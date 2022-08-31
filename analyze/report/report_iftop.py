@@ -1,60 +1,58 @@
 from os import listdir
 from statistics import mean
 
+from report_utils import addunit, rmunit
 
-def rmsuffix(s):
-    if s[-1].isdecimal():
-        return float(s)
-    elif s[-1] == 'K' or s[-1] == 'k':
-        return float(s[:-1]) * 1000
-    elif s[-1] == 'M' or s[-1] == 'm':
-        return float(s[:-1]) * 1000000
-    elif s[-1] == 'G' or s[-1] == 'g':
-        return float(s[:-1]) * 1000000000
-    else:
-        raise Exception(f'Undefined unit in "{s}".')
+
+def get_report_iftop(last=0):
+    hours = listdir('./txts/iftops')
+    hours = list(map(lambda x: x[:13], hours))
+    hours = sorted(hours)[-1*last:]
+
+    iftops = read_iftops(hours)
+
+    lines = '## IFTOP\n'
+    lines += '```\n'
+    lines += ' ' * 13 + '\tPeak \t    \t     \tCumu\n'
+    lines += ' ' * 13 + '\tsent \trecv\ttotal\tsent\trecv\ttotal\n'
+    for h in sorted(hours):
+        lines += h + '\t'
+        for col in [
+            'Peak_sent_max', 'Peak_recv_max', 'Peak_totl_max',
+            'Cumu_sent_avg', 'Cumu_recv_avg', 'Cumu_totl_avg',
+        ]:
+            lines += addunit(iftops[h][col]) + '\t'
+        lines += '\n'
+    lines += '```\n'
+
+    return lines
 
 
 def read_iftops(hours):
     iftops = dict()
     for ts2H in hours:
-        iftops[ts2H] = {
-            'times': [],
-            'peaks': [[], [], []],
-            'cumus': [[], [], []],
-        }
+        peaks, cumus = [[], [], []], [[], [], []]
         with open(f'txts/iftops/{ts2H}iftop.txt') as f:
             lines = f.readlines()
         for line in lines:
-            if line[0] == '2':
-                iftops[ts2H]['times'].append(line[:-1])
-            elif line[0] == 'P':
+            if line[0] == 'P':
                 peak = line.split('b')[-4:-1]
                 for i in range(3):
-                    iftops[ts2H]['peaks'][i].append(
-                        rmsuffix(peak[i][-5:]))
+                    peaks[i].append(rmunit(peak[i][-5:]))
             elif line[0] == 'C':
                 cumu = line.split('B')[-4:-1]
                 for i in range(3):
-                    iftops[ts2H]['cumus'][i].append(
-                        rmsuffix(cumu[i][-5:]))
+                    cumus[i].append(rmunit(cumu[i][-5:]))
+        iftops[ts2H] = {
+            'Peak_sent_max': max(peaks[0]),
+            'Peak_recv_max': max(peaks[1]),
+            'Peak_totl_max': max(peaks[2]),
+            'Cumu_sent_avg': mean(cumus[0]),
+            'Cumu_recv_avg': mean(cumus[1]),
+            'Cumu_totl_avg': mean(cumus[2]),
+        }
     return iftops
 
 
 if __name__ == '__main__':
-    from report import print_shorter
-
-    hours = list(map(lambda x: x[:13], listdir('./txts/iftops')))
-    iftops = read_iftops(hours)
-
-    print('             \tsent_max\trecv_max\ttotl_max\tsent_avg\trecv_avg\ttotl_avg')
-    for h in sorted(hours):
-        print(h, end='\t')
-        print_shorter(max(iftops[h]['peaks'][0]))
-        print_shorter(max(iftops[h]['peaks'][1]))
-        print_shorter(max(iftops[h]['peaks'][2]))
-        print_shorter(mean(iftops[h]['cumus'][0]))
-        print_shorter(mean(iftops[h]['cumus'][1]))
-        print_shorter(mean(iftops[h]['cumus'][2]))
-        print()
-
+    print(get_report_iftop(), end='')
