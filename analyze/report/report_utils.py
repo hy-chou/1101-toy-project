@@ -27,3 +27,17 @@ def rmunit(s):
         return float(s[:-1]) * 1000000000
     else:
         raise Exception(f'Undefined unit in "{s}".')
+
+
+def isIPv4(s):
+    if len(s) < 7 or 15 < len(s):
+        return False
+    blocks = s.split('.')
+    if len(blocks) != 4:
+        return False
+    for block in blocks:
+        if not block.isdigit():
+            return False
+        if len(block) > 3:
+            return False
+    return True

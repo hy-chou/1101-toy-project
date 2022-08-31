@@ -4,25 +4,6 @@ from statistics import mean
 from report_utils import addunit
 
 
-def get_report_rtt(last=0):
-    hours = listdir('./tsvs')
-    hours = sorted(hours)[-1*last:]
-
-    rtts = read_rtts(hours)
-
-    lines = '## RTT\n'
-    lines += '```\n'
-    lines += ' ' * 13 + '\tavg\tmax\n'
-    for h in sorted(hours):
-        lines += h + '\t'
-        for col in ['rtt_avg', 'rtt_max']:
-            lines += addunit(rtts[h][col]) + '\t'
-        lines += '\n'
-    lines += '```\n'
-
-    return lines
-
-
 def read_rtts(hours):
     rtts = dict()
     for ts2H in hours:
@@ -45,6 +26,25 @@ def read_rtts(hours):
                 'rtt_avg': -1,
             }
     return rtts
+
+
+def get_report_rtt(last=0):
+    hours = listdir('./tsvs')
+    hours = sorted(hours)[-1*last:]
+
+    rtts = read_rtts(hours)
+
+    lines = '## RTT\n'
+    lines += '```\n'
+    lines += ' ' * 13 + '\tavg\tmax\n'
+    for h in sorted(hours):
+        lines += h + '\t'
+        for col in ['rtt_avg', 'rtt_max']:
+            lines += addunit(rtts[h][col]) + '\t'
+        lines += '\n'
+    lines += '```\n'
+
+    return lines
 
 
 if __name__ == '__main__':
