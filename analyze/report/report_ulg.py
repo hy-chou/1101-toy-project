@@ -16,6 +16,7 @@ def read_ulgs(hours):
         ulgs[ts2H] = {
             'page': len(files),
             'ulg': ulgcount,
+            'u/p': ulgcount/(len(files)*100),
         }
     return ulgs
 
@@ -28,10 +29,10 @@ def get_report_ulg(last=0):
 
     lines = '## ULG\n'
     lines += '```\n'
-    lines += ' ' * 13 + '\tpage\tulg\n'
+    lines += ' ' * 13 + '\tpage\tulg\tu/p\n'
     for h in sorted(hours):
         lines += h + '\t'
-        for col in ['page', 'ulg']:
+        for col in ['page', 'ulg', 'u/p']:
             lines += addunit(ulgs[h][col]) + '\t'
         lines += '\n'
     lines += '```\n'
