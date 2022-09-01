@@ -18,8 +18,4 @@ DIR_C=/home/nslab-m02/Samuel/1101-toy-project/collect
 # |  |  |  |  |
 # *  *  *  *  * user-name command to be executed
 
-  *  * 30  8  * nslab-m02 bash ${DIR_C}/booktop.sh ${DIR_C}/try2035_30k
-
-  *  * 31  8  * nslab-m02 bash ${DIR_C}/booktop.sh ${DIR_C}/try2036_30k
-  *  *  1  9  * nslab-m02 bash ${DIR_C}/booktop.sh ${DIR_C}/try2036_30k
-  *  *  2  9  * nslab-m02 bash ${DIR_C}/booktop.sh ${DIR_C}/try2036_30k
+  *  *  *  *  * nslab-m02 bash ${DIR_C}/booktop.sh ${DIR_C}/try2036_30k

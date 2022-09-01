@@ -1,23 +1,29 @@
 #!/bin/bash
 
 if [ $# != 3 ] ; then
-    echo "NAME"
-    echo -e "\tbookc.sh - schedule the probes with crontab"
-    echo ""
-    echo "DIRECTIONS"
-    echo -e "\t1. $ crontab -e"
-    echo -e "\t2. append the following line:"
-    echo -e "\t   59 * * * * bash ~/.../bookc.sh DIR C1 CN"
-    echo ""
-    echo "ARGUMENTS"
-    echo -e "\tDIR \tabsolute path to the directory to store the data"
-    echo -e "\t    \te.g. ~/try2035_30k"
-    echo ""
-    echo -e "\tC1  \tstart from the C1-th channel"
-    echo -e "\t    \te.g. 1"
-    echo ""
-    echo -e "\tCN  \tto the CN-th channel"
-    echo -e "\t    \te.g. 30000"
+    FILENAME="bookc.sh"
+
+    echo    "NAME"
+    echo -e "\tbookc.sh - schedule the probes with cron"
+    echo
+    echo    "DIRECTIONS"
+    echo -e "\tWrite the following lines to /etc/cron.d/bookc"
+    echo
+    echo -e "\t\tSHELL=/bin/sh"
+    echo -e "\t\tPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+    echo -e "\t\tDIR_B=$(cd ../books && pwd)"
+    echo -e "\t\tDIR_C=$(cd .. && pwd)"
+    echo -e "\t\t59  *  *  *  * $USER bash \${DIR_B}/bookc.sh \${DIR_C}/try2037_30k 1 30000"
+    echo
+    echo    "ARGUMENTS"
+    echo -e "\tDIR\tabsolute path to the directory to store the data"
+    echo -e "\t   \te.g. ~/try2035_30k"
+    echo
+    echo -e "\tC1 \tstart from the C1-th channel"
+    echo -e "\t   \te.g. 1"
+    echo
+    echo -e "\tCN \tto the CN-th channel"
+    echo -e "\t   \te.g. 30000"
 
     exit 0
 fi
