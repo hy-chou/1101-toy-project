@@ -1,7 +1,7 @@
 from os import listdir
 from statistics import mean
 
-from report_utils import addunit
+from report_utils import addunit, gethours
 
 
 def read_rtts(hours):
@@ -28,24 +28,31 @@ def read_rtts(hours):
     return rtts
 
 
-def get_report_rtt(last=0):
-    hours = listdir('./tsvs')
-    hours = sorted(hours)[-1*last:]
-
-    rtts = read_rtts(hours)
-
-    lines = '## RTT\n'
-    lines += '```\n'
-    lines += ' ' * 13 + '\tavg\tmax\n'
+def get_content_rtt(hours, rtts):
+    lines = ' ' * 13 + '\tavg\tmax\n'
     for h in sorted(hours):
         lines += h + '\t'
         for col in ['rtt_avg', 'rtt_max']:
             lines += addunit(rtts[h][col]) + '\t'
         lines += '\n'
-    lines += '```\n'
+
+    return lines
+
+
+def get_md_rtt(last=0):
+    lines = '## RTT\n'
+
+    try:
+        hours = gethours('./tsvs')[-1*last:]
+        rtts = read_rtts(hours)
+        lines += '```\n'
+        lines += get_content_rtt(hours, rtts)
+        lines += '```\n'
+    except:
+        lines += "err at get_report_rtt()\n"
 
     return lines
 
 
 if __name__ == '__main__':
-    print(get_report_rtt(), end='')
+    print(get_md_rtt(), end='')

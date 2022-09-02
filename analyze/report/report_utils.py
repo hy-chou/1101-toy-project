@@ -1,3 +1,6 @@
+from os import listdir
+
+
 def addunit(num=-1, unit='  '):
     if num < 10 ** 3:
         snum = str(num)[:4]
@@ -41,3 +44,10 @@ def isIPv4(s):
         if len(block) > 3:
             return False
     return True
+
+
+def gethours(dirpath='./ulgs'):
+    hours = listdir(dirpath)
+    hours = list(map(lambda x: x[:13], hours))
+    hours = sorted(hours)
+    return hours

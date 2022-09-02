@@ -1,7 +1,7 @@
 from os import listdir
 from statistics import mean
 
-from report_utils import addunit, isIPv4
+from report_utils import addunit, gethours, isIPv4
 
 
 def read_tsvs(hours):
@@ -37,22 +37,29 @@ def read_tsvs(hours):
     return tsvs
 
 
-def get_report_tsv(last=0):
-    hours = listdir('./tsvs')
-    hours = sorted(hours)[-1*last:]
-
-    tsvs = read_tsvs(hours)
-
-    lines = '## TSV\n'
-    lines += '```\n'
-    lines += ' ' * 13 + '\t    \t   \t    \t   \tuniq\t   \tRTT\n'
+def get_content_tsv(hours, tsvs):
+    lines = ' ' * 13 + '\t    \t   \t    \t   \tuniq\t   \tRTT\n'
     lines += ' ' * 13 + '\tchnl\tres\tipv4\terr\tipv4\terr\tavg\tmax\n'
     for h in sorted(hours):
         lines += h + '\t'
         for col in ['chnl', 'res', 'ipv4', 'err', 'ipv4_u', 'err_u', 'rtt_avg', 'rtt_max']:
             lines += addunit(tsvs[h][col]) + '\t'
         lines += '\n'
-    lines += '```\n'
+
+    return lines
+
+
+def get_md_tsv(last=0):
+    lines = '## TSV\n'
+
+    try:
+        hours = gethours('./tsvs')[-1*last:]
+        tsvs = read_tsvs(hours)
+        lines += '```\n'
+        lines += get_content_tsv(hours, tsvs)
+        lines += '```\n'
+    except:
+        lines += "err at get_report_tsv()\n"
 
     return lines
 
@@ -64,4 +71,4 @@ if __name__ == '__main__':
         if int(argv[1]) >= 0:
             last = int(argv[1])
 
-    print(get_report_tsv(last), end='')
+    print(get_md_tsv(last), end='')

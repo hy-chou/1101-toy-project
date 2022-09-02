@@ -1,7 +1,7 @@
 from os import listdir
 from statistics import mean
 
-from report_utils import addunit, rmunit
+from report_utils import addunit, gethours, rmunit
 
 
 def read_iftops(hours):
@@ -33,16 +33,8 @@ def read_iftops(hours):
     return iftops
 
 
-def get_report_iftop(last=0):
-    hours = listdir('./txts/iftops')
-    hours = list(map(lambda x: x[:13], hours))
-    hours = sorted(hours)[-1*last:]
-
-    iftops = read_iftops(hours)
-
-    lines = '## IFTOP\n'
-    lines += '```\n'
-    lines += ' ' * 13 + '\t      \tPeak \t    \t     \tCumu\n'
+def get_content_iftop(hours, iftops):
+    lines = ' ' * 13 + '\t      \tPeak \t    \t     \tCumu\n'
     lines += ' ' * 13 + '\tiftops\tsent \trecv\ttotal\tsent\trecv\ttotal\n'
     for h in sorted(hours):
         lines += h + '\t'
@@ -53,7 +45,21 @@ def get_report_iftop(last=0):
         ]:
             lines += addunit(iftops[h][col]) + '\t'
         lines += '\n'
-    lines += '```\n'
+
+    return lines
+
+
+def get_md_iftop(last=0):
+    lines = '## IFTOP\n'
+
+    try:
+        hours = gethours('./txts/iftops')[-1*last:]
+        iftops = read_iftops(hours)
+        lines += '```\n'
+        lines += get_content_iftop(hours, iftops)
+        lines += '```\n'
+    except:
+        lines += "err at get_md_iftop()\n"
 
     return lines
 
@@ -65,4 +71,4 @@ if __name__ == '__main__':
         if int(argv[1]) >= 0:
             last = int(argv[1])
 
-    print(get_report_iftop(last), end='')
+    print(get_md_iftop(last), end='')

@@ -1,7 +1,7 @@
 from os import listdir
 from statistics import mean
 
-from report_utils import addunit
+from report_utils import addunit, gethours
 
 
 def read_tops(hours):
@@ -37,16 +37,8 @@ def read_tops(hours):
     return tops
 
 
-def get_report_top(last=0):
-    hours = listdir('./txts/tops')
-    hours = list(map(lambda x: x[:13], hours))
-    hours = sorted(hours)[-1*last:]
-
-    tops = read_tops(hours)
-
-    lines = '## TOP\n'
-    lines += '```\n'
-    lines += ' ' * 13 + '\t    \tCPU\t   \t   \t   \t   \t   \tMem \n'
+def get_content_top(hours, tops):
+    lines = ' ' * 13 + '\t    \tCPU\t   \t   \t   \t   \t   \tMem \n'
     lines += ' ' * 13 + '\t    \tus \t   \tsy \t   \tid \t   \tused\n'
     lines += ' ' * 13 + '\ttops\tavg\tmax\tavg\tmax\tavg\tmax\tavg \tmax\n'
     for h in sorted(hours):
@@ -58,10 +50,25 @@ def get_report_top(last=0):
         ]:
             lines += addunit(tops[h][col]) + '\t'
         lines += '\n'
-    lines += '```\n'
+
+    return lines
+
+
+def get_md_top(last=0):
+    lines = '## TOP\n'
+
+    try:
+        hours = gethours('./txts/tops')[-1*last:]
+        tops = read_tops(hours)
+
+        lines += '```\n'
+        lines += get_content_top(hours, tops)
+        lines += '```\n'
+    except:
+        lines += "err at get_report_top()\n"
 
     return lines
 
 
 if __name__ == '__main__':
-    print(get_report_top(), end='')
+    print(get_md_top(), end='')
