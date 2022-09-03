@@ -7,7 +7,7 @@ NAME
 
 ARGUMENTS
   \tDIR\tabsolute path to the directory to store the data
-  \t   \te.g. $HOME/try2038_30k
+  \t   \te.g. $HOME/try2040_30k
 
   \tC1 \tstart from the C1-th channel
   \t   \te.g. 1
@@ -23,7 +23,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 DIR_C=$(cd .. && pwd)
 
-59  *  *  *  * $USER bash \${DIR_C}/books/bookc.sh \${DIR_C}/try2038_30k 1 30000
+59  *  *  *  * $USER bash \${DIR_C}/books/bookc.sh \${DIR_C}/try2040_30k 1 30000
 "
     exit 0
 fi
@@ -38,11 +38,12 @@ mkdir -p $1 && cd $1
 CMD_STRM="nohup node ../getActiveStreams.js $2 $3"
 CMD_EDGE="nohup node ../getActiveEdges.js   $2 $3"
 
-${CMD_STRM} "    0 ${H9} * * *" " 6 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   12 ${H9} * * *" "18 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   24 ${H9} * * *" "30 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   36 ${H9} * * *" "42 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   48 ${H9} * * *" "54 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "    5 ${H9} * * *" "10 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   15 ${H9} * * *" "20 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   25 ${H9} * * *" "30 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   35 ${H9} * * *" "40 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   45 ${H9} * * *" "50 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   55 ${H9} * * *" " 0 ${H10} * * *" > /dev/null 2>&1 &
 
 ${CMD_EDGE} " 0-19 ${H9} * * *" "30 ${H9} * * *" > /dev/null 2>&1 &
 ${CMD_EDGE} "20-39 ${H9} * * *" "50 ${H9} * * *" > /dev/null 2>&1 &
