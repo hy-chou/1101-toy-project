@@ -34,7 +34,7 @@ def read_iftops(hours):
 
 
 def get_content_iftop(hours, iftops):
-    lines = ' ' * 13 + '\t      \tPeak \t    \t     \tCumu\n'
+    lines = ' ' * 13 + '\t      \tPeak \t    \t     \tCumu\t    \t     \n'
     lines += ' ' * 13 + '\tiftops\tsent \trecv\ttotal\tsent\trecv\ttotal\n'
     for h in sorted(hours):
         lines += h + '\t'

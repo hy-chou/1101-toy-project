@@ -19,17 +19,19 @@ def addunit(num=-1, unit='  '):
     return snum + unit
 
 
-def rmunit(s):
-    if s[-1].isdecimal():
-        return float(s)
-    elif s[-1] == 'K' or s[-1] == 'k':
-        return float(s[:-1]) * 1000
-    elif s[-1] == 'M' or s[-1] == 'm':
-        return float(s[:-1]) * 1000000
-    elif s[-1] == 'G' or s[-1] == 'g':
-        return float(s[:-1]) * 1000000000
+def rmunit(snum='-1'):
+    snum = snum.strip()
+    if snum[-1].isdecimal():
+        num = float(snum)
+    elif snum[-1] == 'K' or snum[-1] == 'k':
+        num = float(snum[:-1]) * 1000
+    elif snum[-1] == 'M' or snum[-1] == 'm':
+        num = float(snum[:-1]) * 1000000
+    elif snum[-1] == 'G' or snum[-1] == 'g':
+        num = float(snum[:-1]) * 1000000000
     else:
-        raise Exception(f'Undefined unit in "{s}".')
+        raise Exception(f'Undefined unit in "{snum}".')
+    return num
 
 
 def isIPv4(s):
