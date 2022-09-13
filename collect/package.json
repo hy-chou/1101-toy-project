@@ -2,17 +2,20 @@
   "name": "1101-toy-project",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nohup node index.js &"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "HsuanYu CHOU",
   "license": "CC0-1.0",
   "dependencies": {
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
-    "m3u8-parser": "^4.4.0",
-    "node-cron": "^3.0.0"
+    "node-cron": "^3.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.23.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
   }
 }
