@@ -2,9 +2,9 @@ const { URL } = require("url");
 const process = require("process");
 const { dirname } = require("node:path");
 const m3u8Parser = require("m3u8-parser");
-const API = require("../../Jujuby/Prober/src/Api.js");
+const { mkdir, appendFile } = require("node:fs/promises");
+const KAPI = require("./KAPI.js");
 const { lookupDNSCache } = require("../../Jujuby/Prober/Cache/DNSCache.js");
-const { mkdir, appendFile, readFile } = require("node:fs/promises");
 const {
   lookupStreamCache,
 } = require("../../Jujuby/Prober/Cache/StreamInfoCache.js");
@@ -36,18 +36,7 @@ function getAccessToken(channel) {
 }
 
 function getMasterPlaylist(token, channel) {
-  const params = {
-    player: "twitchweb",
-    token: token.value,
-    sig: token.signature,
-    allow_audio_only: false,
-    fast_bread: true,
-    allow_source: true,
-    p: Math.round(Math.random() * 1000000),
-  };
-  return API.usherAPI(`/api/channel/hls/${channel}.m3u8`, params).then(
-    (response) => response.data
-  );
+  return KAPI.getMasterPlaylist(token, channel).then((res) => res.data);
 }
 
 // get Media Playlist that contains URLs of the files needed for streaming
@@ -83,7 +72,7 @@ function getBestQualityPlaylistUri(playlists) {
 }
 
 function getPlaylistContent(uri) {
-  return API.axiosLookupBeforeGet(uri).then((response) => response.data);
+  return KAPI.get(uri).then((res) => res.data);
 }
 
 function getEdgeUrl(raw) {
@@ -92,31 +81,6 @@ function getEdgeUrl(raw) {
   parser.end();
   // return the uri of the last .ts file
   return parser.manifest.segments.slice(-1).pop().uri;
-}
-
-function getEdgeAddrOri(channel) {
-  return getAccessToken(channel)
-    .then((token) => getMasterPlaylist(token, channel))
-    .then((masterPlaylist) => parseMasterPlaylist(masterPlaylist))
-    .then((playlists) => getBestQualityPlaylistUri(playlists))
-    .then((uri) => getPlaylistContent(uri))
-    .then((rawContent) => {
-      const urlObj = new URL(getEdgeUrl(rawContent));
-      return urlObj.hostname;
-    })
-    .then((hostname) => {
-      const ip = lookupDNSCache(hostname);
-      return ip;
-    })
-    .catch((error) => {
-      handleError(error, `@ getEdgeAddr(), ${channel}`);
-      return error.message;
-      // if (error.isAxiosError || error.name === "StreamInfoCacheError") {
-      //   throw error;
-      // } else {
-      //   throw new getAddrError(error.message);
-      // }
-    });
 }
 
 const getEdgeAddr = async (channel) => {

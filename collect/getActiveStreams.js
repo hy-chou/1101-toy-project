@@ -1,7 +1,7 @@
 const cron = require("node-cron");
 const process = require("process");
 const { dirname } = require("node:path");
-const API = require("../../Jujuby/Prober/src/Api.js");
+const KAPI = require("./KAPI.js");
 const { mkdir, appendFile } = require("node:fs/promises");
 
 const handleError = async (err, location) => {
@@ -10,6 +10,7 @@ const handleError = async (err, location) => {
   const errPath = `errs/${ts2H}error.tsv`;
   const lines = ts + "\t" + location + "\t" + err + "\n";
 
+  console.error(lines);
   return append(errPath, lines);
 };
 
@@ -19,10 +20,11 @@ const append = async (path, data) => {
 };
 
 const getAPageOfStreams = async (cursor = "") => {
-  return API.twitchAPI("/helix/streams", {
-    first: 100,
-    after: cursor,
-  })
+  // return API.twitchAPI("/helix/streams", {
+  //   first: 100,
+  //   after: cursor,
+  // })
+  return KAPI.getStreams(cursor)
     .then(async (res) => {
       const ts = new Date().toISOString();
       const ts2H = ts.slice(0, 13);
