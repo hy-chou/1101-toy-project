@@ -19,25 +19,33 @@ const handleError = async (err, location) => {
   return append(errPath, lines);
 };
 
-const getAPageOfStreams = async (cursor = '') => KAPI.getStreams(cursor)
-  .then(async (res) => {
-    const ts = new Date().toISOString();
-    const ts2H = ts.slice(0, 13);
-    const rawPath = `raws/${ts2H}raw.json.tsv`;
-    const lines = `${ts}\t${JSON.stringify(res.data)}\n`;
+const getAPageOfStreams = async (cursor = '') => {
+  let data;
+  try {
+    data = await KAPI.getStreams(cursor).then((res) => res.data);
+  } catch (err) {
+    handleError(err, '@ getAPageOfStreams()');
+    data = err;
+  }
 
-    await append(rawPath, lines);
-    return res.data;
-  })
-  .catch((err) => handleError(err, '@ getAPageOfStreams()'));
+  const ts = new Date().toISOString();
+  const ts2H = ts.slice(0, 13);
+  const rawPath = `raws/${ts2H}raw.json.tsv`;
+  const lines = `${ts}\t${JSON.stringify(data)}\n`;
+
+  await append(rawPath, lines);
+  return data;
+};
+
 const writeUserLogins = async (c, ulogins) => {
-  const ts2H = new Date().toISOString().slice(0, 13);
+  const ts = new Date().toISOString();
+  const ts2H = ts.slice(0, 13);
   const ulgPath = `ulgs/${ts2H}/${ts2H}ulg${c}.tsv`;
-  let lines = `${new Date().toISOString()}\n`;
 
-  ulogins.map((ulogin) => {
-    lines += `${ulogin}\t`;
-  });
+  let lines = ulogins.reduce((previousValue, currentValue) => {
+    const line = `${previousValue + currentValue}\t`;
+    return line;
+  }, `${ts}\n`);
   lines = `${lines.slice(0, -1)}\n`;
 
   return append(ulgPath, lines);
