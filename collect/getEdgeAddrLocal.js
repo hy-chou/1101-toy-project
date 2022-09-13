@@ -4,7 +4,7 @@ const { dirname } = require("node:path");
 const m3u8Parser = require("m3u8-parser");
 const { mkdir, appendFile } = require("node:fs/promises");
 const KAPI = require("./KAPI.js");
-const { lookupDNSCache } = require("../../Jujuby/Prober/Cache/DNSCache.js");
+const { getDNSRecord } = require("./Kache.js");
 const {
   lookupStreamCache,
 } = require("../../Jujuby/Prober/Cache/StreamInfoCache.js");
@@ -90,7 +90,7 @@ const getEdgeAddr = async (channel) => {
     .then((playlists) => getBestQualityPlaylistUri(playlists))
     .then((uri) => getPlaylistContent(uri))
     .then((rawContent) => new URL(getEdgeUrl(rawContent)).hostname)
-    .then((hostname) => lookupDNSCache(hostname))
+    .then((hostname) => getDNSRecord(hostname))
     .catch((error) => {
       handleError(error, `@ getEdgeAddr(), ${channel}`);
       return error.message;
