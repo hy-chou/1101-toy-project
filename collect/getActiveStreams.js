@@ -91,14 +91,18 @@ if (require.main === module) {
 
   switch (pargv.length) {
     case 2:
-      getUserLogins().then(stopProcess);
+      getUserLogins()
+        .then(stopProcess);
       break;
     case 4:
-      getUserLogins(Number(pargv[2]), Number(pargv[3])).then(stopProcess);
+      getUserLogins(Number(pargv[2]), Number(pargv[3]))
+        .then(stopProcess);
       break;
-    case 6:
-      cron.schedule(pargv[4], () => getUserLogins(Number(pargv[2]), Number(pargv[3])));
-      cron.schedule(pargv[5], stopProcess);
+    case 5:
+      cron.schedule(pargv[4], () => {
+        getUserLogins(Number(pargv[2]), Number(pargv[3]))
+          .then(stopProcess);
+      });
       break;
     default:
       console.log('Error:  wrong argv');
