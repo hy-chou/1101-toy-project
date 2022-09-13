@@ -1,9 +1,12 @@
-const { URL } = require("url");
 const { dirname } = require("node:path");
-const m3u8Parser = require("m3u8-parser");
 const { mkdir, appendFile } = require("node:fs/promises");
 const KAPI = require("./KAPI.js");
 const { getDNSRecord } = require("./Kache.js");
+
+const append = async (path, data) => {
+  await mkdir(dirname(path), { recursive: true });
+  return appendFile(path, data);
+};
 
 const handleError = async (err, location) => {
   const ts = new Date().toISOString();
@@ -14,21 +17,6 @@ const handleError = async (err, location) => {
   console.error(lines);
   return append(errPath, lines);
 };
-
-const append = async (path, data) => {
-  await mkdir(dirname(path), { recursive: true });
-  return appendFile(path, data);
-};
-
-function getPlaybackAccessToken(channel) {
-  return KAPI.getPlaybackAccessToken(channel).then(
-    (res) => res.data.data.streamPlaybackAccessToken
-  );
-}
-
-function getMasterPlaylist(token, channel) {
-  return KAPI.getMasterPlaylist(token, channel).then((res) => res.data);
-}
 
 // get Media Playlist that contains URLs of the files needed for streaming
 function parseMasterPlaylist(playlist) {
@@ -58,29 +46,28 @@ function parseMasterPlaylist(playlist) {
   return parsedPlaylist;
 }
 
-function getBestQualityPlaylistUri(playlists) {
-  return playlists[0].uri;
-}
-
-function getPlaylistContent(uri) {
-  return KAPI.get(uri).then((res) => res.data);
-}
-
 function getEdgeUrl(raw) {
-  const parser = new m3u8Parser.Parser();
-  parser.push(raw);
-  parser.end();
-  // return the uri of the last .ts file
-  return parser.manifest.segments.slice(-1).pop().uri;
+  const lines = raw.split("\n");
+  const urls = lines.filter((line) => line !== "" && line[0] !== "#");
+  return urls.at(-1);
 }
+
+const getHostnameFromUrl = (url) => {
+  const schemeless = url.slice(url.indexOf("://") + 3);
+  const hostname = schemeless.slice(0, schemeless.indexOf("/"));
+  return hostname;
+};
 
 const getEdgeAddr = async (channel) => {
-  return getPlaybackAccessToken(channel)
-    .then((token) => getMasterPlaylist(token, channel))
+  return KAPI.getPlaybackAccessToken(channel)
+    .then((res) => res.data.data.streamPlaybackAccessToken)
+    .then((token) => KAPI.getMasterPlaylist(token, channel))
+    .then((res) => res.data)
     .then((masterPlaylist) => parseMasterPlaylist(masterPlaylist))
-    .then((playlists) => getBestQualityPlaylistUri(playlists))
-    .then((uri) => getPlaylistContent(uri))
-    .then((rawContent) => new URL(getEdgeUrl(rawContent)).hostname)
+    .then((playlists) => playlists[0].uri)
+    .then((uri) => KAPI.get(uri).then((res) => res.data))
+    .then((rawContent) => getEdgeUrl(rawContent))
+    .then((url) => getHostnameFromUrl(url))
     .then((hostname) => getDNSRecord(hostname))
     .catch((error) => {
       handleError(error, `@ getEdgeAddr(), ${channel}`);
