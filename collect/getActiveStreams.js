@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const process = require('process');
+const process = require('node:process');
 const { dirname } = require('node:path');
 const { mkdir, appendFile } = require('node:fs/promises');
 const KAPI = require('./KAPI');

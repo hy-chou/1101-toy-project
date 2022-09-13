@@ -38,13 +38,13 @@ mkdir -p $1 && cd $1
 CMD_STRM="nohup node ../getActiveStreams.js $2 $3"
 CMD_EDGE="nohup node ../getActiveEdges.js   $2 $3"
 
-${CMD_STRM} "    5 ${H9} * * *" "10 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   15 ${H9} * * *" "20 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   25 ${H9} * * *" "30 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   35 ${H9} * * *" "40 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   45 ${H9} * * *" "50 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_STRM} "   55 ${H9} * * *" " 0 ${H10} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "    5 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   15 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   25 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   35 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   45 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_STRM} "   55 ${H9} * * *" > /dev/null 2>&1 &
 
-${CMD_EDGE} " 0-19 ${H9} * * *" "30 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_EDGE} "20-39 ${H9} * * *" "50 ${H9} * * *" > /dev/null 2>&1 &
-${CMD_EDGE} "40-59 ${H9} * * *" "10 ${H10} * * *" > /dev/null 2>&1 &
+${CMD_EDGE} " 0-19 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_EDGE} "20-39 ${H9} * * *" > /dev/null 2>&1 &
+${CMD_EDGE} "40-59 ${H9} * * *" > /dev/null 2>&1 &

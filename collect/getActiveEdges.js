@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const process = require('process');
+const process = require('node:process');
 const { dirname } = require('node:path');
 const { mkdir, appendFile, readFile } = require('node:fs/promises');
 const { getEdgeAddr } = require('./getEdgeAddrLocal');
