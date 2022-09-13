@@ -1,13 +1,9 @@
 const { URL } = require("url");
-const process = require("process");
 const { dirname } = require("node:path");
 const m3u8Parser = require("m3u8-parser");
 const { mkdir, appendFile } = require("node:fs/promises");
 const KAPI = require("./KAPI.js");
 const { getDNSRecord } = require("./Kache.js");
-const {
-  lookupStreamCache,
-} = require("../../Jujuby/Prober/Cache/StreamInfoCache.js");
 
 const handleError = async (err, location) => {
   const ts = new Date().toISOString();
@@ -24,15 +20,10 @@ const append = async (path, data) => {
   return appendFile(path, data);
 };
 
-class getAddrError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "getAddrError";
-  }
-}
-
-function getAccessToken(channel) {
-  return lookupStreamCache(channel).then((response) => response.accessToken);
+function getPlaybackAccessToken(channel) {
+  return KAPI.getPlaybackAccessToken(channel).then(
+    (res) => res.data.data.streamPlaybackAccessToken
+  );
 }
 
 function getMasterPlaylist(token, channel) {
@@ -84,7 +75,7 @@ function getEdgeUrl(raw) {
 }
 
 const getEdgeAddr = async (channel) => {
-  return getAccessToken(channel)
+  return getPlaybackAccessToken(channel)
     .then((token) => getMasterPlaylist(token, channel))
     .then((masterPlaylist) => parseMasterPlaylist(masterPlaylist))
     .then((playlists) => getBestQualityPlaylistUri(playlists))
@@ -97,29 +88,4 @@ const getEdgeAddr = async (channel) => {
     });
 };
 
-module.exports = {
-  getAccessToken,
-  getMasterPlaylist,
-  parseMasterPlaylist,
-  getBestQualityPlaylistUri,
-  getPlaylistContent,
-  getEdgeUrl,
-  getEdgeAddr,
-};
-
-if (require.main === module) {
-  const channel = process.argv[2];
-  const testMultiCall = async (channel) => {
-    getEdgeAddr(channel)
-      .then((addr) => {
-        console.log(`Content server address for ${channel} is ${addr}`);
-        process.exit(0);
-      })
-      .catch((error) => {
-        console.log(
-          `Error caught in testMultiCall in getEdgeAddr.js | error: ${error.code} | Message: ${error.message}`
-        );
-      });
-  };
-  testMultiCall(channel);
-}
+module.exports = { getEdgeAddr };
