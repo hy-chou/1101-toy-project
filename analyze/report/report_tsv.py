@@ -38,7 +38,7 @@ def read_tsvs(hours):
 
 
 def get_content_tsv(hours, tsvs):
-    lines = ' ' * 13 + '\t    \t   \t    \t   \tuniq\t   \tRTT\n'
+    lines = ' ' * 13 + '\t    \t   \t    \t   \tuniq\t   \tRTT\t   \n'
     lines += ' ' * 13 + '\tchnl\tres\tipv4\terr\tipv4\terr\tavg\tmax\n'
     for h in sorted(hours):
         lines += h + '\t'

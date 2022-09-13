@@ -38,8 +38,8 @@ def read_tops(hours):
 
 
 def get_content_top(hours, tops):
-    lines = ' ' * 13 + '\t    \tCPU\t   \t   \t   \t   \t   \tMem \n'
-    lines += ' ' * 13 + '\t    \tus \t   \tsy \t   \tid \t   \tused\n'
+    lines = ' ' * 13 + '\t    \tCPU\t   \t   \t   \t   \t   \tMem \t   \n'
+    lines += ' ' * 13 + '\t    \tus \t   \tsy \t   \tid \t   \tused\t   \n'
     lines += ' ' * 13 + '\ttops\tavg\tmax\tavg\tmax\tavg\tmax\tavg \tmax\n'
     for h in sorted(hours):
         lines += h + '\t'
