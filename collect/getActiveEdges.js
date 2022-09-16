@@ -15,7 +15,7 @@ const handleError = async (err, location) => {
   const errPath = `errs/${ts2H}error.tsv`;
   const lines = `${ts}\t${location}\t${err}\n`;
 
-  console.error(lines);
+  // console.error(lines);
   return append(errPath, lines);
 };
 
@@ -83,30 +83,26 @@ const main = async (c1 = 1, cn = 100, groupSize = 100, burstMode = false) => {
     cs.push(cs[cs.length - 1] + groupSize);
   }
 
-  return Promise.all(cs.map((c) => collectEdgesOfGroup(c, burstMode)));
+  return Promise.all(cs.map((c) => collectEdgesOfGroup(c, burstMode)))
+    .catch((error) => handleError(error, '@ gAE main()'))
+    .finally(() => process.kill(process.pid, 'SIGTERM'));
 };
 
 if (require.main === module) {
   const pargv = process.argv;
-  const stopProcess = () => process.kill(process.pid, 'SIGTERM');
 
   switch (pargv.length) {
     case 2:
-      main()
-        .then(stopProcess);
+      main();
       break;
     case 4:
-      main(Number(pargv[2]), Number(pargv[3]))
-        .then(stopProcess);
+      main(Number(pargv[2]), Number(pargv[3]));
       break;
     case 5:
-      cron.schedule(pargv[4], () => {
-        main(Number(pargv[2]), Number(pargv[3]))
-          .then(stopProcess);
-      });
+      cron.schedule(pargv[4], () => main(Number(pargv[2]), Number(pargv[3])));
       break;
     default:
-      console.log('Error:  wrong argv');
-      stopProcess();
+      // console.error('Error:  wrong argv');
+      process.kill(process.pid, 'SIGTERM');
   }
 }

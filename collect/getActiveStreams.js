@@ -15,7 +15,7 @@ const handleError = async (err, location) => {
   const errPath = `errs/${ts2H}error.tsv`;
   const lines = `${ts}\t${location}\t${err}\n`;
 
-  console.error(lines);
+  // console.error(lines);
   return append(errPath, lines);
 };
 
@@ -80,32 +80,28 @@ const getUserLogins = async (c1 = 1, cn = 100, groupSize = 100) => {
     cSliced += groupSize;
   }
 
-  return Promise.all(writingList);
+  return Promise.all(writingList)
+    .catch((err) => handleError(err, '@ getUserLogins()'))
+    .finally(() => process.kill(process.pid, 'SIGTERM'));
 };
 
 module.exports = { getUserLogins };
 
 if (require.main === module) {
   const pargv = process.argv;
-  const stopProcess = () => process.kill(process.pid, 'SIGTERM');
 
   switch (pargv.length) {
     case 2:
-      getUserLogins()
-        .then(stopProcess);
+      getUserLogins();
       break;
     case 4:
-      getUserLogins(Number(pargv[2]), Number(pargv[3]))
-        .then(stopProcess);
+      getUserLogins(Number(pargv[2]), Number(pargv[3]));
       break;
     case 5:
-      cron.schedule(pargv[4], () => {
-        getUserLogins(Number(pargv[2]), Number(pargv[3]))
-          .then(stopProcess);
-      });
+      cron.schedule(pargv[4], () => getUserLogins(Number(pargv[2]), Number(pargv[3])));
       break;
     default:
-      console.log('Error:  wrong argv');
-      stopProcess();
+      // console.error('Error:  wrong argv');
+      process.kill(process.pid, 'SIGTERM');
   }
 }

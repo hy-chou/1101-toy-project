@@ -14,7 +14,7 @@ const handleError = async (err, location) => {
   const errPath = `errs/${ts2H}error.tsv`;
   const lines = `${ts}\t${location}\t${err}\n`;
 
-  console.error(lines);
+  // console.error(lines);
   return append(errPath, lines);
 };
 
