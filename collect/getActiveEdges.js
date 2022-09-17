@@ -17,7 +17,7 @@ const readUserLogins = async (c, ttl = 60) => {
     userLogins = lines[lines.length - 2].split('\t');
   } catch (err) {
     if (ttl) {
-      handleError(err, '@ readUserLogins()');
+      if (err.code !== 'ENOENT') handleError(err, '@ readUserLogins()');
       await waitASecond();
       userLogins = readUserLogins(c, ttl - 1);
     } else {
