@@ -3,7 +3,7 @@ const axios = require('axios');
 require('dotenv').config({ path: '../.env' });
 
 const kaxios = axios.create({
-  timeout: 30 * 1000,
+//  timeout: 30 * 1000,
   headers: { keepAlive: true },
 });
 
