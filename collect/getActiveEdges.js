@@ -1,27 +1,9 @@
 const cron = require('node-cron');
 const process = require('node:process');
-const { dirname } = require('node:path');
-const { mkdir, appendFile, readFile } = require('node:fs/promises');
+const { readFile } = require('node:fs/promises');
+
 const { getEdgeAddr } = require('./getEdgeAddrLocal');
-
-const append = async (path, data) => {
-  await mkdir(dirname(path), { recursive: true });
-  return appendFile(path, data);
-};
-
-const handleError = async (err, location) => {
-  const ts = new Date().toISOString();
-  const ts2H = ts.slice(0, 13);
-  const errPath = `errs/${ts2H}error.tsv`;
-  const lines = `${ts}\t${location}\t${err}\n`;
-
-  // console.error(lines);
-  return append(errPath, lines);
-};
-
-const waitASecond = () => new Promise((resolve) => {
-  setTimeout(resolve, 1000);
-});
+const { append, handleError, waitASecond } = require('./kutils');
 
 const readUserLogins = async (c, ttl = 60) => {
   const ts2H = new Date().toISOString().slice(0, 13);

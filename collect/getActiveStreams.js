@@ -1,23 +1,7 @@
 const cron = require('node-cron');
 const process = require('node:process');
-const { dirname } = require('node:path');
-const { mkdir, appendFile } = require('node:fs/promises');
 const KAPI = require('./KAPI');
-
-const append = async (path, data) => {
-  await mkdir(dirname(path), { recursive: true });
-  return appendFile(path, data);
-};
-
-const handleError = async (err, location) => {
-  const ts = new Date().toISOString();
-  const ts2H = ts.slice(0, 13);
-  const errPath = `errs/${ts2H}error.tsv`;
-  const lines = `${ts}\t${location}\t${err}\n`;
-
-  // console.error(lines);
-  return append(errPath, lines);
-};
+const { append, handleError } = require('./kutils');
 
 const getAPageOfStreams = async (cursor = '') => {
   let data;
@@ -84,8 +68,6 @@ const getUserLogins = async (c1 = 1, cn = 100, groupSize = 100) => {
     .catch((err) => handleError(err, '@ getUserLogins()'))
     .finally(() => process.kill(process.pid, 'SIGTERM'));
 };
-
-module.exports = { getUserLogins };
 
 if (require.main === module) {
   const pargv = process.argv;

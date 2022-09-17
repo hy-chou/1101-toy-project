@@ -1,11 +1,7 @@
 const dns = require('node:dns');
-const { dirname } = require('node:path');
-const { mkdir, appendFile, readFile } = require('node:fs/promises');
+const { readFile } = require('node:fs/promises');
 
-const append = async (path, data) => {
-  await mkdir(dirname(path), { recursive: true });
-  return appendFile(path, data);
-};
+const { append } = require('./kutils');
 
 const readDNSCache = async (hostname) => {
   const ts2M = new Date().toISOString().slice(0, 7);
@@ -26,15 +22,16 @@ const writeDNSCache = async (hostname, record) => {
   return append(cachePath, lines);
 };
 
-const getDNSRecord = async (hostname) => readDNSCache(hostname).catch(async (err) => {
-  const record = await dns.promises
-    .lookup(hostname)
-    .then((result) => result.address);
+const getDNSRecord = async (hostname) => readDNSCache(hostname)
+  .catch(async (err) => {
+    const record = await dns.promises
+      .lookup(hostname)
+      .then((result) => result.address);
 
-  if (err.code !== 'ENOENT') console.error(err);
-  writeDNSCache(hostname, record);
+    if (err.code !== 'ENOENT') console.error(err);
+    writeDNSCache(hostname, record);
 
-  return record;
-});
+    return record;
+  });
 
 module.exports = { getDNSRecord };
