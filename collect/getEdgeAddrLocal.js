@@ -1,5 +1,5 @@
 const KAPI = require('./KAPI');
-const { getDNSRecord } = require('./Kache');
+const { getDNSRecord, getPATRecord } = require('./Kache');
 const { handleError } = require('./kutils');
 
 const parseMasterPlaylist = (playlist) => {
@@ -41,19 +41,23 @@ const getHostnameFromUrl = (url) => {
   return hostname;
 };
 
-const getEdgeAddr = async (channel) => KAPI.getPlaybackAccessToken(channel)
-  .then((res) => res.data.data.streamPlaybackAccessToken)
-  .then((token) => KAPI.getMasterPlaylist(token, channel))
-  .then((res) => res.data)
-  .then((masterPlaylist) => parseMasterPlaylist(masterPlaylist))
-  .then((playlists) => playlists[0].uri)
-  .then((uri) => KAPI.get(uri).then((res) => res.data))
-  .then((rawContent) => getEdgeUrl(rawContent))
-  .then((url) => getHostnameFromUrl(url))
-  .then((hostname) => getDNSRecord(hostname))
-  .catch((error) => {
-    handleError(error, `@ getEdgeAddr(), ${channel}`);
-    return error.message;
-  });
+const getEdgeAddr = async (channel) => {
+  const edgeAddress = await getPATRecord(channel)
+  // KAPI.axiosGetPlaybackAccessToken(channel)
+  // .then((res) => res.data.data.streamPlaybackAccessToken)
+    .then((token) => KAPI.axiosGetMasterPlaylist(token, channel))
+    .then((res) => res.data)
+    .then((masterPlaylist) => parseMasterPlaylist(masterPlaylist))
+    .then((playlists) => playlists[0].uri)
+    .then((uri) => KAPI.axiosGet(uri).then((res) => res.data))
+    .then((rawContent) => getEdgeUrl(rawContent))
+    .then((url) => getHostnameFromUrl(url))
+    .then((hostname) => getDNSRecord(hostname))
+    .catch((error) => {
+      handleError(error, `@ getEdgeAddr(), ${channel}`);
+      return error.message;
+    });
+  return edgeAddress;
+};
 
 module.exports = { getEdgeAddr };

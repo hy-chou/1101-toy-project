@@ -8,9 +8,9 @@ const kaxios = axios.create({
 });
 
 class KAPI {
-  static get = (url) => kaxios.get(url);
+  static axiosGet = (url) => kaxios.get(url);
 
-  static getStreams = (cursor = '') => {
+  static axiosGetStreams = (cursor = '') => {
     const url = 'https://api.twitch.tv/helix/streams';
     const config = {
       headers: {
@@ -26,7 +26,7 @@ class KAPI {
     return kaxios.get(url, config);
   };
 
-  static getMasterPlaylist = (token, channel = 'twitchdev') => {
+  static axiosGetMasterPlaylist = (token, channel = 'twitchdev') => {
     const url = `https://usher.ttvnw.net/api/channel/hls/${channel}.m3u8`;
     const config = {
       params: {
@@ -45,7 +45,7 @@ class KAPI {
     return kaxios.get(url, config);
   };
 
-  static getPlaybackAccessToken = (channel) => {
+  static axiosPostPlaybackAccessToken = (channel) => {
     const url = 'https://gql.twitch.tv/gql';
     const data = JSON.stringify({
       operationName: 'PlaybackAccessToken_Template',
