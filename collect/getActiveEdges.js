@@ -28,21 +28,33 @@ const readUserLogins = async (c, ttl = 60) => {
   return userLogins;
 };
 
-const writeEdge = async (channel, ts1, addr) => {
-  const dts = (new Date() - ts1) / 1000;
-  const ts2H = ts1.toISOString().slice(0, 13);
-  const lines = `${ts1.toISOString()}\t${addr}\t${dts}\n`;
-  const tsvPath = `tsvs/${ts2H}/${ts2H}${channel}.tsv`;
+const writeEdge = async (channel, addr) => {
+  const ts = new Date().toISOString();
+  const ts2H = ts.slice(0, 13);
+  const lines = `${ts}\t${addr}\n`;
+  const tsvPath = `tsvs/${ts2H}/${channel}.tsv`;
 
   return append(tsvPath, lines);
 };
 
-const getEdgeFromUserLogin = async (ulogin) => {
-  const ts1 = new Date();
+const writeRTT = async (channel, dts) => {
+  const ts = new Date().toISOString();
+  const ts2H = ts.slice(0, 13);
+  const lines = `${ts}\t${dts}\n`;
+  const rttPath = `rtts/${ts2H}/${channel}.tsv`;
 
-  await getEdgeAddr(ulogin)
-    .then((addr) => writeEdge(ulogin, ts1, addr))
-    .catch((error) => writeEdge(ulogin, ts1, error.message));
+  return append(rttPath, lines);
+};
+
+const getEdgeFromUserLogin = async (ulogin) => {
+  const tsPre = new Date();
+  const edgeAddr = await getEdgeAddr(ulogin);
+
+  return Promise.all([
+    writeEdge(ulogin, edgeAddr),
+    writeRTT(ulogin, (new Date() - tsPre) / 1000),
+  ])
+    .catch((error) => writeEdge(ulogin, tsPre, error.message));
 };
 
 const collectEdgesOfGroup = async (c, burstMode = false) => {
