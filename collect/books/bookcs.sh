@@ -10,7 +10,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 DIR_C=$(cd .. && pwd)
 
-*/12 * * * * $USER bash \${DIR_C}/books/bookcs.sh \${DIR_C}/try1004_1k 1 1000
+*/12 * * * * $USER bash \${DIR_C}/books/bookcs.sh \${DIR_C}/try0000_1k 1 1000
 "
     exit 0
 fi
