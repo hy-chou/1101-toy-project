@@ -26,8 +26,7 @@ def read_rtts(hours):
 
 
 def get_content_rtt(hours, rtts):
-    lines = ' ' * 13 + '\t    \tRTT\t   \n'
-    lines += ' ' * 13 + '\trtts\tavg\tmax\n'
+    lines = ' ' * 13 + '\trtts\tavg\tmax\n'
     for h in sorted(hours):
         lines += h + '\t'
         for col in ['rtts', 'rtt_avg', 'rtt_max']:
