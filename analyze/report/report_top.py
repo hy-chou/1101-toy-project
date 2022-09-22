@@ -4,7 +4,7 @@ from report_utils import addunit, gethours
 
 
 def read_tops(hours):
-    tops = dict()
+    top_dict = dict()
     for ts2H in hours:
         topcount, cpu_uss, cpu_sys, cpu_ids, mems_useds = 0, [], [], [], []
         with open(f'../../../letop/logs/tops/{ts2H}.txt') as f:
@@ -22,7 +22,7 @@ def read_tops(hours):
             elif line[:5] == 'MiB M':
                 mem = float(line.split(',')[2].split('u')[0])
                 mems_useds.append(mem)
-        tops[ts2H] = {
+        top_dict[ts2H] = {
             'tops': topcount,
             'CPU_us_avg': mean(cpu_uss),
             'CPU_us_max': max(cpu_uss),
@@ -33,7 +33,7 @@ def read_tops(hours):
             'Mem_used_avg': mean(mems_useds),
             'Mem_used_max': max(mems_useds),
         }
-    return tops
+    return top_dict
 
 
 def get_content_top(hours, tops):

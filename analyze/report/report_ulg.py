@@ -4,7 +4,7 @@ from report_utils import addunit, gethours
 
 
 def read_ulgs(hours):
-    ulgs = dict()
+    ulg_dict = dict()
     for ts2H in hours:
         files = listdir(f'ulgs/{ts2H}')
         ulgcount = 0
@@ -13,12 +13,12 @@ def read_ulgs(hours):
                 lines = f.readlines()
             for line in lines:
                 ulgcount += line.count('\t') + 0.5
-        ulgs[ts2H] = {
+        ulg_dict[ts2H] = {
             'page': len(files),
             'ulg': ulgcount,
             'u/p': ulgcount/(len(files)*100),
         }
-    return ulgs
+    return ulg_dict
 
 
 def get_content_ulg(hours, ulgs):

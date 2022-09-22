@@ -4,7 +4,7 @@ from report_utils import addunit, gethours, isIPv4
 
 
 def read_edgs(hours):
-    edgs = dict()
+    edge_dict = dict()
     for ts2H in hours:
         # files = listdir(f'edgs/{ts2H}')
         files = listdir(f'tsvs/{ts2H}')
@@ -22,7 +22,7 @@ def read_edgs(hours):
                 else:
                     errcount += 1
                     errs.add(l[1])
-        edgs[ts2H] = {
+        edge_dict[ts2H] = {
             'chnl': len(files),
             'res': rescount,
             'ipv4': ipv4count/rescount,
@@ -30,7 +30,7 @@ def read_edgs(hours):
             'ipv4_u': len(ipv4s),
             'err_u': len(errs),
         }
-    return edgs
+    return edge_dict
 
 
 def get_content_edg(hours, edgs):

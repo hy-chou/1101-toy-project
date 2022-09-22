@@ -5,7 +5,7 @@ from report_utils import addunit, gethours, isIPv4
 
 
 def read_tsvs(hours):
-    tsvs = dict()
+    tsv_dict = dict()
     for ts2H in hours:
         files = listdir(f'tsvs/{ts2H}')
         rescount, ipv4count, errcount, ipv4s, errs, rtts = 0, 0, 0, set(), set(), []
@@ -24,7 +24,7 @@ def read_tsvs(hours):
                     errs.add(l[1])
                 rtt = float(l[2][:-1])
                 rtts.append(rtt)
-        tsvs[ts2H] = {
+        tsv_dict[ts2H] = {
             'chnl': len(files),
             'res': rescount,
             'ipv4': ipv4count/rescount,
@@ -34,7 +34,7 @@ def read_tsvs(hours):
             'rtt_max': max(rtts),
             'rtt_avg': mean(rtts),
         }
-    return tsvs
+    return tsv_dict
 
 
 def get_content_tsv(hours, tsvs):

@@ -4,7 +4,7 @@ from report_utils import addunit, gethours, rmunit
 
 
 def read_iftops(hours):
-    iftops = dict()
+    iftop_dict = dict()
     for ts2H in hours:
         iftopcount, peaks, cumus = 0, [[], [], []], [[], [], []]
         with open(f'../../../letop/logs/iftops/{ts2H}.txt') as f:
@@ -20,7 +20,7 @@ def read_iftops(hours):
                 cumu = line.split('B')[-4:-1]
                 for i in range(3):
                     cumus[i].append(rmunit(cumu[i][-5:]))
-        iftops[ts2H] = {
+        iftop_dict[ts2H] = {
             'iftops': iftopcount,
             'Peak_sent_max': max(peaks[0]),
             'Peak_recv_max': max(peaks[1]),
@@ -29,7 +29,7 @@ def read_iftops(hours):
             'Cumu_recv_avg': mean(cumus[1]),
             'Cumu_totl_avg': mean(cumus[2]),
         }
-    return iftops
+    return iftop_dict
 
 
 def get_content_iftop(hours, iftops):
