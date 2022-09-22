@@ -2,7 +2,7 @@ from sys import argv
 
 from report_iftop import get_md_iftop
 from report_top import get_md_top
-from report_tsv import get_md_tsv
+from report_edg import get_md_edg
 from report_ulg import get_md_ulg
 
 
@@ -10,7 +10,7 @@ def print_md(last):
     print(get_md_iftop(last))
     print(get_md_top(last))
     print(get_md_ulg(last))
-    print(get_md_tsv(last), end='')
+    print(get_md_edg(last), end='')
 
 
 if __name__ == '__main__':
