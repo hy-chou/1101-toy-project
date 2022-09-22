@@ -49,8 +49,8 @@ def get_md_edg(last=0):
     lines = '## Edge Address\n'
 
     try:
-        # hours = gethours('./edgs')[-1*last:]
-        hours = gethours('./tsvs')[-1*last:]
+        # hours = gethours('./tsvs')[-1*last:]
+        hours = gethours()[-1*last:]
         edgs = read_edgs(hours)
         lines += '```\n'
         lines += get_content_edg(hours, edgs)

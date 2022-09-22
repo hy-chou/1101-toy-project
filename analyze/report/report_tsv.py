@@ -53,7 +53,7 @@ def get_md_tsv(last=0):
     lines = '## TSV\n'
 
     try:
-        hours = gethours('./tsvs')[-1*last:]
+        hours = gethours()[-1*last:]
         tsvs = read_tsvs(hours)
         lines += '```\n'
         lines += get_content_tsv(hours, tsvs)

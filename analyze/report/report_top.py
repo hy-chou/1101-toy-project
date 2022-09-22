@@ -1,4 +1,3 @@
-from os import listdir
 from statistics import mean
 
 from report_utils import addunit, gethours
@@ -8,7 +7,7 @@ def read_tops(hours):
     tops = dict()
     for ts2H in hours:
         topcount, cpu_uss, cpu_sys, cpu_ids, mems_useds = 0, [], [], [], []
-        with open(f'txts/tops/{ts2H}top.txt') as f:
+        with open(f'../../../letop/logs/tops/{ts2H}.txt') as f:
             lines = f.readlines()
         for line in lines:
             if line[:13] == ts2H:
@@ -20,7 +19,7 @@ def read_tops(hours):
                 cpu_uss.append(cpu_us)
                 cpu_sys.append(cpu_sy)
                 cpu_ids.append(cpu_id)
-            elif line[4] == 'M':
+            elif line[:5] == 'MiB M':
                 mem = float(line.split(',')[2].split('u')[0])
                 mems_useds.append(mem)
         tops[ts2H] = {
@@ -58,7 +57,7 @@ def get_md_top(last=0):
     lines = '## TOP\n'
 
     try:
-        hours = gethours('./txts/tops')[-1*last:]
+        hours = gethours()[-1*last:]
         tops = read_tops(hours)
 
         lines += '```\n'

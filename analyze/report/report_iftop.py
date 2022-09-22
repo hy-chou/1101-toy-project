@@ -1,4 +1,3 @@
-from os import listdir
 from statistics import mean
 
 from report_utils import addunit, gethours, rmunit
@@ -8,7 +7,7 @@ def read_iftops(hours):
     iftops = dict()
     for ts2H in hours:
         iftopcount, peaks, cumus = 0, [[], [], []], [[], [], []]
-        with open(f'txts/iftops/{ts2H}iftop.txt') as f:
+        with open(f'../../../letop/logs/iftops/{ts2H}.txt') as f:
             lines = f.readlines()
         for line in lines:
             if line[:13] == ts2H:
@@ -35,7 +34,8 @@ def read_iftops(hours):
 
 def get_content_iftop(hours, iftops):
     lines = ' ' * 13 + '\t      \tPeak \t    \t     \tCumu\t    \t     \n'
-    lines += ' ' * 13 + '\tiftops\tsent \trecv\ttotal\tsent\trecv\ttotal\n'
+    lines += ' ' * 13 + '\t      \tsent \trecv\ttotal\tsent\trecv\ttotal\n'
+    lines += ' ' * 13 + '\tiftops\tmax  \tmax \tmax  \tavg \tavg \tavg  \n'
     for h in sorted(hours):
         lines += h + '\t'
         for col in [
@@ -53,7 +53,7 @@ def get_md_iftop(last=0):
     lines = '## IFTOP\n'
 
     try:
-        hours = gethours('./txts/iftops')[-1*last:]
+        hours = gethours()[-1*last:]
         iftops = read_iftops(hours)
         lines += '```\n'
         lines += get_content_iftop(hours, iftops)

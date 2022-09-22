@@ -12,7 +12,7 @@ def read_ulgs(hours):
             with open(f'ulgs/{ts2H}/{file}') as f:
                 lines = f.readlines()
             for line in lines:
-                ulgcount += line.count('\t')
+                ulgcount += line.count('\t') + 0.5
         ulgs[ts2H] = {
             'page': len(files),
             'ulg': ulgcount,
@@ -36,7 +36,7 @@ def get_md_ulg(last=0):
     lines = '## ULG\n'
 
     try:
-        hours = gethours('./ulgs')[-1*last:]
+        hours = gethours()[-1*last:]
         ulgs = read_ulgs(hours)
 
         lines += '```\n'
