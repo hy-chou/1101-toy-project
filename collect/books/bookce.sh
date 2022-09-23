@@ -3,10 +3,7 @@
 if [ $# != 3 ] ; then
     echo -en "
 DIRECTIONS
-  \tWrite the following lines to /etc/cron.d/bookce
-
-SHELL=/bin/sh
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+  \tWrite the following lines to /etc/cron.d/bookc
 
 DIR_C=$(cd .. && pwd)
 
