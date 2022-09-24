@@ -5,7 +5,7 @@ const axios = require('axios');
 require('dotenv').config({ path: '../.env' });
 
 const kaxios = axios.create({
-  timeout: 30 * 1000,
+  timeout: 60 * 1000,
   httpAgent: new http.Agent({ keepAlive: true }),
   httpsAgent: new https.Agent({ keepAlive: true }),
 });
