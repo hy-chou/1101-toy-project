@@ -1,6 +1,7 @@
 const http = require('node:http');
 const https = require('node:https');
 const axios = require('axios');
+// const { handleError } = require('./kutils');
 
 require('dotenv').config({ path: '../.env' });
 
@@ -9,6 +10,22 @@ const kaxios = axios.create({
   httpAgent: new http.Agent({ keepAlive: true }),
   httpsAgent: new https.Agent({ keepAlive: true }),
 });
+
+// kaxios.interceptors.request.use(
+//   (config) => config,
+//   (error) => {
+//     handleError(error, '@ KAPI, pre-req');
+//     return Promise.reject(error);
+//   },
+// );
+
+// kaxios.interceptors.response.use(
+//   (res) => res,
+//   (error) => {
+//     handleError(error, '@ KAPI, post-res');
+//     return Promise.reject(error);
+//   },
+// );
 
 class KAPI {
   static axiosGet = (url) => kaxios.get(url);

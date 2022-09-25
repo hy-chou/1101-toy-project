@@ -13,4 +13,4 @@ DIR_C=$(cd .. && pwd)
 fi
 
 mkdir -p $1 && cd $1
-nohup node ../getActiveStreams.js $2 $3 &
+nohup node ../updateStreams.js $2 $3 &

@@ -9,7 +9,7 @@ const getAPageOfStreams = async (cursor = '') => {
     data = await KAPI.axiosGetStreams(cursor).then((res) => res.data);
   } catch (err) {
     handleError(err, '@ getAPageOfStreams()');
-    data = err;
+    return err;
   }
 
   const ts = new Date().toISOString();

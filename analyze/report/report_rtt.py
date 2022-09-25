@@ -7,10 +7,10 @@ from report_utils import addunit, gethours
 def read_rtts(hours):
     rtt_dict = dict()
     for ts2H in hours:
-        files = listdir(f'rtts/{ts2H}')
+        files = listdir(f'rtts/gAE/{ts2H}')
         rttcount,  rtts = 0, []
         for file in files:
-            with open(f'rtts/{ts2H}/{file}') as f:
+            with open(f'rtts/gAE/{ts2H}/{file}') as f:
                 lines = f.readlines()
             rttcount += len(lines)
             for line in lines:

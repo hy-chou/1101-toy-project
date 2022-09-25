@@ -7,7 +7,7 @@ const { append, handleError, waitASecond } = require('./kutils');
 
 const readUserLogins = async (c, ttl = 60) => {
   const ts2H = new Date().toISOString().slice(0, 13);
-  const ulgPath = `ulgs/${ts2H}/${ts2H}ulg${c}.tsv`;
+  const ulgPath = `./ulgs/${ts2H}/p${c}.tsv`;
   let userLogins = [];
 
   try {
@@ -41,7 +41,7 @@ const writeRTT = async (channel, dts) => {
   const ts = new Date().toISOString();
   const ts2H = ts.slice(0, 13);
   const lines = `${ts}\t${dts}\n`;
-  const rttPath = `rtts/${ts2H}/${channel}.tsv`;
+  const rttPath = `./rtts/gAE/${ts2H}/${channel}.tsv`;
 
   return append(rttPath, lines);
 };

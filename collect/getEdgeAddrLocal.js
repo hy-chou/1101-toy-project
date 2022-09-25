@@ -43,8 +43,6 @@ const getHostnameFromUrl = (url) => {
 
 const getEdgeAddr = async (channel) => {
   const edgeAddress = await getPATRecord(channel)
-  // KAPI.axiosGetPlaybackAccessToken(channel)
-  // .then((res) => res.data.data.streamPlaybackAccessToken)
     .then((token) => KAPI.axiosGetMasterPlaylist(token, channel))
     .then((res) => res.data)
     .then((masterPlaylist) => parseMasterPlaylist(masterPlaylist))
