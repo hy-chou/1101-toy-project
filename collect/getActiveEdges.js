@@ -71,11 +71,8 @@ const collectEdgesOfGroup = async (c, burstMode = false) => {
 };
 
 const main = async (c1 = 1, cn = 100, groupSize = 100, burstMode = false) => {
-  const cs = [c1];
-
-  while (cs[cs.length - 1] + groupSize - 1 < cn) {
-    cs.push(cs[cs.length - 1] + groupSize);
-  }
+  const numPage = Math.ceil(cn / 100);
+  const cs = [...Array(numPage).keys()].map((c) => c + 1);
 
   return Promise.all(cs.map((c) => collectEdgesOfGroup(c, burstMode)))
     .catch((error) => handleError(error, '@ gAE main()'))
