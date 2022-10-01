@@ -4,7 +4,7 @@ const { handleError, append } = require('./kutils');
 const getStreams = async (cursor, p) => {
   const res = await KAPI.reqStreams(cursor)
     .catch(async (err) => {
-      await handleError(err, `@getStreams(${p})`);
+      await handleError(err.message, `@getStreams(${p})`);
       throw new Error('handled');
     });
 

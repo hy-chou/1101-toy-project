@@ -39,6 +39,14 @@ const waitASecond = () => new Promise((resolve) => {
   setTimeout(resolve, 1000);
 });
 
+const writeIPv4 = async (channel, ipv4) => {
+  const ts = new Date().toISOString();
+  const ts2H = ts.slice(0, 13);
+  const lines = `${ts}\t${ipv4}\t${channel}\n`;
+
+  return append(`ipv4/${ts2H}.tsv`, lines);
+};
+
 module.exports = {
-  append, handleError, listDir, m3u82url, waitASecond, url2hostname,
+  append, handleError, listDir, m3u82url, waitASecond, url2hostname, writeIPv4,
 };
