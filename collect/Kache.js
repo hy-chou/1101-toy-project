@@ -57,7 +57,7 @@ const writePATCache = (channel, record) => {
 
 const getPATRecord = async (channel) => readPATCache(channel)
   .catch(async (err) => {
-    const record = await KAPI.axiosPostPlaybackAccessToken(channel)
+    const record = await KAPI.reqPlaybackAccessToken(channel)
       .then((res) => res.data.data.streamPlaybackAccessToken);
 
     if (err.code !== 'ENOENT') handleError(err, '@getPATRecord()');

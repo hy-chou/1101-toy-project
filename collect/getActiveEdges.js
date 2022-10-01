@@ -30,18 +30,18 @@ const readUserLogins = async (c, ttl = 60) => {
 
 const writeEdge = async (channel, addr) => {
   const ts = new Date().toISOString();
-  const ts2H = ts.slice(0, 13);
-  const lines = `${ts}\t${addr}\n`;
-  const tsvPath = `tsvs/${ts2H}/${channel}.tsv`;
+  const ts2M = ts.slice(0, 16);
+  const lines = `${ts}\t${addr}\t${channel}\n`;
+  const tsvPath = `tsvs/${ts2M}.tsv`;
 
   return append(tsvPath, lines);
 };
 
 const writeRTT = async (channel, dts) => {
   const ts = new Date().toISOString();
-  const ts2H = ts.slice(0, 13);
-  const lines = `${ts}\t${dts}\n`;
-  const rttPath = `./rtts/gAE/${ts2H}/${channel}.tsv`;
+  const ts2M = ts.slice(0, 16);
+  const lines = `${ts}\t${dts}\t${channel}\n`;
+  const rttPath = `./rtts/gAE/${ts2M}.tsv`;
 
   return append(rttPath, lines);
 };
@@ -93,7 +93,6 @@ if (require.main === module) {
       cron.schedule(pargv[4], () => main(Number(pargv[2]), Number(pargv[3])));
       break;
     default:
-      // console.error('Error:  wrong argv');
       process.kill(process.pid, 'SIGTERM');
   }
 }

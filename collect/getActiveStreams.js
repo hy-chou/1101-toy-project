@@ -6,7 +6,7 @@ const { append, handleError } = require('./kutils');
 const getAPageOfStreams = async (cursor = '') => {
   let data;
   try {
-    data = await KAPI.axiosGetStreams(cursor).then((res) => res.data);
+    data = await KAPI.reqStreams(cursor).then((res) => res.data);
   } catch (err) {
     handleError(err, '@ getAPageOfStreams()');
     return err;
