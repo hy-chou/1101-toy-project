@@ -1,8 +1,10 @@
-const dns = require('node:dns');
 const KAPI = require('./utils/API');
+const { init, lookup } = require('./utils/dns');
 const {
   writeData, getTS, readUserLogins, url2hostname,
 } = require('./utils/utils');
+
+let kache;
 
 const getEdgeIPv4 = async (userLogin) => {
   const ipv4 = await KAPI.reqPlaybackAccessToken(userLogin)
@@ -14,8 +16,7 @@ const getEdgeIPv4 = async (userLogin) => {
     .then((res) => res.data)
     .then((weaverM3U8) => weaverM3U8.split('\n').find((line) => line[0] !== '#'))
     .then((edgeURL) => url2hostname(edgeURL))
-    .then((hostname) => dns.promises.lookup(hostname))
-    .then((result) => result.address)
+    .then((hostname) => lookup(kache, hostname))
     .catch((err) => {
       if (err.message === 'ERR_BAD_REQUEST') { return 'ERR_BAD_REQUEST'; }
       if (err.message === 'ECONNABORTED') { return 'ECONNABORTED'; }
@@ -31,6 +32,8 @@ const getEdgeIPv4 = async (userLogin) => {
 };
 
 const updateEgdes = async () => {
+  kache = await init();
+
   const userLogins = await readUserLogins()
     .catch((err) => {
       if (err.code === 'ENOENT') {
