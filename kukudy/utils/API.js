@@ -39,14 +39,16 @@ kaxios.interceptors.response.use(
       `./rtts/${ts2H}/${type}.tsv`,
       `${t1}\t${rtt / 1000}\t${error.response.status}\n`,
     );
+
+    if (error.code === 'ERR_BAD_REQUEST') {
+      if (error.response.status === 404) { return Promise.reject(new Error('E404')); }
+      if (error.response.status === 403) { return Promise.reject(new Error('E403')); }
+    }
+    if (error.code === 'ECONNABORTED') { return Promise.reject(new Error('ECONNABORTED')); }
     await writeData(
       `./errs/${ts2H}.tsv`,
-      `${t1}\t${type}\t${error.code}\n${t1}\t${type}\t${error.message}\n`,
+      `${t1}\t${type}\t${error.code}\t${error.message}\n`,
     );
-
-    if (error.code === 'ECONNABORTED') { return Promise.reject(new Error('ECONNABORTED')); }
-    if (error.code === 'ERR_BAD_REQUEST') { return Promise.reject(new Error('ERR_BAD_REQUEST')); }
-
     return Promise.reject(error);
   },
 );

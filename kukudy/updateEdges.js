@@ -18,7 +18,8 @@ const getEdgeIPv4 = async (userLogin) => {
     .then((edgeURL) => url2hostname(edgeURL))
     .then((hostname) => lookup(kache, hostname))
     .catch((err) => {
-      if (err.message === 'ERR_BAD_REQUEST') { return 'ERR_BAD_REQUEST'; }
+      if (err.message === 'E404') { return 'E404'; }
+      if (err.message === 'E403') { return 'E403'; }
       if (err.message === 'ECONNABORTED') { return 'ECONNABORTED'; }
       return err.message;
     });
