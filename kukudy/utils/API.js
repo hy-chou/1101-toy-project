@@ -17,12 +17,12 @@ kaxios.interceptors.response.use(
     const rtt = Date.parse(t2) - Date.parse(t1);
 
     await writeData(
-      `./rtts/${ts2H}/${type}.tsv`,
+      `./logs/rtts/${ts2H}/${type}.tsv`,
       `${t1}\t${rtt / 1000}\t${response.status}\n`,
     );
     if (type === 'reqStreams') {
       await writeData(
-        `./hdrs/${ts2H}/${type}.json.tsv`,
+        `./logs/hdrs/${ts2H}/${type}.json.tsv`,
         `${t1}\t${JSON.stringify(response.headers)}\n`,
       );
     }
@@ -36,7 +36,7 @@ kaxios.interceptors.response.use(
     const rtt = Date.parse(t2) - Date.parse(t1);
 
     await writeData(
-      `./rtts/${ts2H}/${type}.tsv`,
+      `./logs/rtts/${ts2H}/${type}.tsv`,
       `${t1}\t${rtt / 1000}\t${error.response.status}\n`,
     );
 
