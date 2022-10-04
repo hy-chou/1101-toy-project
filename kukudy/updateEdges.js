@@ -41,10 +41,20 @@ const loadUserLogins = async () => {
 };
 
 const updateEdges = async () => {
+  const t0 = getTS();
   const kache = new Map(await loadDNSCache());
   const userLogins = await loadUserLogins();
 
-  return Promise.all(userLogins.map((userLogin) => getEdgeIPv4(kache, userLogin)));
+  return Promise.all(userLogins.map((userLogin) => getEdgeIPv4(kache, userLogin)))
+    .finally(() => {
+      const tn = new Date();
+      const dt = tn - Date.parse(t0);
+
+      writeData(
+        `./logs/dt/${t0.slice(0, 13)}.tsv`,
+        `${t0}\t${dt / 1000}\t${tn.toISOString()}\n`,
+      );
+    });
 };
 
 if (require.main === module) {
