@@ -5,7 +5,7 @@ const { writeData, getTS } = require('./utils');
 require('dotenv').config({ path: '../.env' });
 
 const kaxios = axios.create({
-  timeout: 31415,
+  timeout: 150_000,
   httpsAgent: new https.Agent({ keepAlive: true }),
 });
 
@@ -37,7 +37,7 @@ kaxios.interceptors.response.use(
 
     await writeData(
       `./logs/rtts/${ts2H}/${type}.tsv`,
-      `${t1}\t${rtt / 1000}\t${error.response.status}\n`,
+      `${t1}\t${rtt / 1000}\t${error.message}\n`,
     );
 
     if (error.code === 'ERR_BAD_REQUEST') {
