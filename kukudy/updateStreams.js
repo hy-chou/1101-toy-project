@@ -19,7 +19,7 @@ const getStreams = async (endPage = 1) => {
         const ts2H = ts.slice(0, 13);
 
         writeData(
-          `./errs/${ts2H}.txt`,
+          `./errs/${ts2H}.tsv`,
           `${ts}\t@getStreams p${p}\t${err.message}\n`,
         );
       });
