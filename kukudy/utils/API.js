@@ -20,12 +20,6 @@ kaxios.interceptors.response.use(
       `./logs/rtts/${ts2H}/${type}.tsv`,
       `${t1}\t${rtt / 1000}\t${response.status}\n`,
     );
-    if (type === 'reqStreams') {
-      await writeData(
-        `./logs/hdrs/${ts2H}/${type}.json.tsv`,
-        `${t1}\t${JSON.stringify(response.headers)}\n`,
-      );
-    }
 
     return response;
   },
