@@ -1,35 +1,25 @@
+/* eslint-disable no-console */
 const { readdir, readFile } = require('node:fs/promises');
 
 const KAPI = require('./utils/API');
-const { lookup, loadDNSCache } = require('./utils/dns');
-const { writeData, getTS, url2hostname } = require('./utils/utils');
+const { reqVPNStatus } = require('./utils/reqVPNStatus');
+const { getTS, url2hostname, writeData } = require('./utils/utils');
 
-const getEdgeIPv4 = async (kache, userLogin) => {
-  const ipv4 = await KAPI.reqPlaybackAccessToken(userLogin)
-    .then((res) => res.data.data.streamPlaybackAccessToken)
-    .then((sPAToken) => KAPI.reqUsherM3U8(sPAToken, userLogin))
-    .then((res) => res.data)
-    .then((usherM3U8) => usherM3U8.split('\n').find((line) => line[0] !== '#'))
-    .then((weaverURL) => KAPI.reqGet(weaverURL))
-    .then((res) => res.data)
-    .then((weaverM3U8) => weaverM3U8.split('\n').find((line) => line[0] !== '#'))
-    .then((edgeURL) => url2hostname(edgeURL))
-    .then((hostname) => lookup(kache, hostname))
-    .catch((err) => {
-      if (err.message === 'E404') { return 'E404'; }
-      if (err.message === 'E403') { return 'E403'; }
-      if (err.message === 'ECONNABORTED') { return 'ECONNABORTED'; }
-      return err.message;
-    });
-
-  const ts = getTS();
-  const ts2H = ts.slice(0, 13);
-
-  return writeData(
-    `./ipv4/${ts2H}.tsv`,
-    `${ts}\t${ipv4}\t${userLogin}\n`,
-  );
-};
+const getVideoEdgeHostname = (userLogin) => KAPI.reqPlaybackAccessToken(userLogin)
+  .then((res) => res.data.data.streamPlaybackAccessToken)
+  .then((sPAToken) => KAPI.reqUsherM3U8(sPAToken, userLogin))
+  .then((res) => res.data)
+  .then((usherM3U8) => usherM3U8.split('\n').find((line) => line[0] !== '#'))
+  .then((weaverURL) => KAPI.reqGet(weaverURL))
+  .then((res) => res.data)
+  .then((weaverM3U8) => weaverM3U8.split('\n').find((line) => line[0] !== '#'))
+  .then((edgeURL) => url2hostname(edgeURL))
+  .catch((err) => {
+    if (err.message === 'E404') { return '#404'; }
+    if (err.message === 'E403') { return '#403'; }
+    if (err.message === 'ECONNABORTED') { return '#ECONNABORTED'; }
+    return err.message;
+  });
 
 const loadUserLogins = async () => {
   const file = await readdir('./ulgs')
@@ -41,20 +31,20 @@ const loadUserLogins = async () => {
 };
 
 const updateEdges = async () => {
-  const t0 = getTS();
-  const kache = new Map(await loadDNSCache());
-  const userLogins = await loadUserLogins();
+  const ts = getTS().replaceAll(':', '.');
+  const edgsPath = `./edgs/${ts}.tsv`;
 
-  return Promise.all(userLogins.map((userLogin) => getEdgeIPv4(kache, userLogin)))
-    .finally(() => {
-      const tn = new Date();
-      const dt = tn - Date.parse(t0);
+  await reqVPNStatus()
+    .then((res) => `#${getTS()}\t${res.data.ip}\t${res.data.country_code}\n`)
+    .then((content) => writeData(edgsPath, content));
 
+  await loadUserLogins()
+    .then((userLogins) => userLogins.forEach(async (userLogin) => {
       writeData(
-        `./logs/dt/${t0.slice(0, 13)}.tsv`,
-        `${t0}\t${dt / 1000}\t${tn.toISOString()}\n`,
+        edgsPath,
+        `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
       );
-    });
+    }));
 };
 
 if (require.main === module) {

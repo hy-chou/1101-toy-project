@@ -17,8 +17,8 @@ kaxios.interceptors.response.use(
     const rtt = Date.parse(t2) - Date.parse(t1);
 
     await writeData(
-      `./logs/rtts/${ts2H}/${type}.tsv`,
-      `${t1}\t${rtt / 1000}\t${response.status}\n`,
+      `./logs/rtts/${ts2H}.tsv`,
+      `${t1}\t${rtt / 1000}\t${type}\n`,
     );
 
     return response;
@@ -30,8 +30,8 @@ kaxios.interceptors.response.use(
     const rtt = Date.parse(t2) - Date.parse(t1);
 
     await writeData(
-      `./logs/rtts/${ts2H}/${type}.tsv`,
-      `${t1}\t${rtt / 1000}\t${error.message}\n`,
+      `./logs/rtts/${ts2H}.tsv`,
+      `${t1}\t${rtt / 1000}\t${type}\t${error.message}\n`,
     );
 
     if (error.code === 'ERR_BAD_REQUEST') {

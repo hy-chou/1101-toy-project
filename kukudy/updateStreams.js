@@ -29,15 +29,11 @@ const getStreams = async (endPage = 1) => {
 };
 
 const updateStreams = async (endPage = 1) => {
-  const tsR = getTS().replace(':', '.');
+  const ulgsPath = `./ulgs/${getTS().replaceAll(':', '.')}.txt`;
   const userLogins = Array.from(await getStreams(endPage));
+  const content = `${userLogins.join('\n')}\n`;
 
-  return Promise.all(userLogins.map(
-    (userLogin) => writeData(
-      `./ulgs/${tsR}.txt`,
-      `${userLogin}\n`,
-    ),
-  ));
+  await writeData(ulgsPath, content);
 };
 
 if (require.main === module) {
