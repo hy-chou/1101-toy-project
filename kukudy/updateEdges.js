@@ -38,12 +38,21 @@ const updateEdges = async () => {
     .then((content) => writeData(edgsPath, content));
 
   await loadUserLogins()
-    .then((userLogins) => userLogins.forEach(async (userLogin) => {
-      writeData(
-        edgsPath,
-        `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
-      );
-    }));
+    .then((userLogins) => userLogins.reduce(
+      (lastPromise, userLogin) => lastPromise.then(async () => {
+        writeData(
+          edgsPath,
+          `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
+        );
+      }),
+      Promise.resolve(),
+    ));
+  // .then((userLogins) => userLogins.forEach(async (userLogin) => {
+  //   writeData(
+  //     edgsPath,
+  //     `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
+  //   );
+  // }));
 };
 
 if (require.main === module) {
