@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const { readdir, readFile } = require('node:fs/promises');
 
 const KAPI = require('./utils/API');

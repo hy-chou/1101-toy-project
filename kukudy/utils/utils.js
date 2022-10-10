@@ -3,6 +3,10 @@ const { appendFile, mkdir } = require('node:fs/promises');
 
 const getTS = () => new Date().toISOString();
 
+const sleep = (ms = 1000) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
+
 const url2hostname = (url) => {
   const p = url.indexOf('://') + 3;
   const q = url.indexOf('/', p);
@@ -14,5 +18,5 @@ const writeData = (path, data) => mkdir(dirname(path), { recursive: true })
   .then(() => appendFile(path, data));
 
 module.exports = {
-  getTS, url2hostname, writeData,
+  getTS, sleep, url2hostname, writeData,
 };
