@@ -2,6 +2,7 @@ const KAPI = require('./utils/API');
 const { writeData, getTS } = require('./utils/utils');
 
 const getStreams = async (endPage = 1) => {
+  const strmPath = `./strm/${getTS().replaceAll(':', '.')}.txt`;
   const cursor = [''];
   const userLogins = new Set();
 
@@ -9,18 +10,16 @@ const getStreams = async (endPage = 1) => {
     // eslint-disable-next-line no-await-in-loop
     await KAPI.reqStreams(cursor[0])
       .then((res) => res.data)
-      .then((data) => {
+      .then(async (data) => {
+        await writeData(strmPath, JSON.stringify(data));
         data.data.forEach((stream) => userLogins.add(stream.user_login));
         cursor.pop();
         cursor.push(data.pagination.cursor);
       })
-      .catch((err) => {
-        const ts = getTS();
-        const ts2H = ts.slice(0, 13);
-
-        writeData(
-          `./errs/${ts2H}.tsv`,
-          `${ts}\t@getStreams p${p}\t${err.message}\n`,
+      .catch(async (err) => {
+        await writeData(
+          `./errs/${getTS().slice(0, 13)}.tsv`,
+          `${getTS()}\t@getStreams p${p}\t${err.message}\n`,
         );
       });
   }
