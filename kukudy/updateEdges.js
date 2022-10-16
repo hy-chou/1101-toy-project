@@ -13,12 +13,7 @@ const getVideoEdgeHostname = (userLogin) => KAPI.reqPlaybackAccessToken(userLogi
   .then((res) => res.data)
   .then((weaverM3U8) => weaverM3U8.split('\n').find((line) => line[0] !== '#'))
   .then((edgeURL) => url2hostname(edgeURL))
-  .catch((err) => {
-    if (err.message === 'E404') { return '#404'; }
-    if (err.message === 'E403') { return '#403'; }
-    if (err.message === 'ECONNABORTED') { return '#ECONNABORTED'; }
-    return err.message;
-  });
+  .catch((err) => err.message);
 
 const loadUserLogins = async () => {
   const file = await readdir('./ulgs')
@@ -38,6 +33,14 @@ const updateEdges = async () => {
     .then((content) => writeData(edgsPath, content));
 
   await loadUserLogins()
+  // // bursty
+  // .then((userLogins) => userLogins.forEach(async (userLogin) => {
+  //   writeData(
+  //     edgsPath,
+  //     `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
+  //   );
+  // }));
+  // // single queue
     .then((userLogins) => userLogins.reduce(
       (lastPromise, userLogin) => lastPromise.then(async () => {
         writeData(
@@ -47,12 +50,6 @@ const updateEdges = async () => {
       }),
       Promise.resolve(),
     ));
-  // .then((userLogins) => userLogins.forEach(async (userLogin) => {
-  //   writeData(
-  //     edgsPath,
-  //     `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
-  //   );
-  // }));
 };
 
 if (require.main === module) {
