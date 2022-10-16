@@ -13,4 +13,4 @@ DIR_K=$(cd .. && pwd)
 fi
 
 mkdir -p $1 && cd $1
-node ../updateStreams.js $2 &
+node ../updateStreams.js $2
