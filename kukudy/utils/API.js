@@ -20,6 +20,12 @@ kaxios.interceptors.response.use(
       `./logs/rtts/${ts2H}.tsv`,
       `${t1}\t${rtt / 1000}\t${type}\n`,
     );
+    if (type === 'reqStreams') {
+      await writeData(
+        `./logs/hdrs/${ts2H}/${type}.json.tsv`,
+        `${t1}\t${JSON.stringify(response.headers)}\n`,
+      );
+    }
 
     return response;
   },
@@ -35,10 +41,12 @@ kaxios.interceptors.response.use(
     );
 
     if (error.code === 'ERR_BAD_REQUEST') {
-      if (error.response.status === 404) { return Promise.reject(new Error('E404')); }
-      if (error.response.status === 403) { return Promise.reject(new Error('E403')); }
+      if (error.response.status === 404) { return Promise.reject(new Error(`E404 ${type}`)); }
+      if (error.response.status === 403) { return Promise.reject(new Error(`E403 ${type}`)); }
     }
-    if (error.code === 'ECONNABORTED') { return Promise.reject(new Error('ECONNABORTED')); }
+    if (error.code === 'EAI_AGAIN') { return Promise.reject(new Error(`EAI_AGAIN ${type}`)); }
+    if (error.code === 'ECONNRESET') { return Promise.reject(new Error(`ECONNRESET ${type}`)); }
+    if (error.code === 'ECONNABORTED') { return Promise.reject(new Error(`ECONNABORTED ${type}`)); }
     await writeData(
       `./errs/${ts2H}.tsv`,
       `${t1}\t${type}\t${error.code}\t${error.message}\n`,
