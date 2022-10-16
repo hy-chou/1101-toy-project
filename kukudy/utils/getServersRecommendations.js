@@ -1,5 +1,5 @@
 const axios = require('axios');
-const countryID = require('./nordVPNCountryList').countryList.AR;
+const countryID = require('./nordVPNCountryList').countryList.TW;
 
 const url = 'https://nordvpn.com/wp-admin/admin-ajax.php';
 const config = {
@@ -19,5 +19,6 @@ const getServersRecommendations = async () => axios.get(url, config)
 
 if (require.main === module) {
   getServersRecommendations()
+    // eslint-disable-next-line no-console
     .then((serverID) => console.log(serverID.join('\t')));
 }
