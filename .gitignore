@@ -1,7 +1,7 @@
 cache/
 pg/
 try*/
-k*
+k[0-9]*/
 
 # # Python.gitignore
 
