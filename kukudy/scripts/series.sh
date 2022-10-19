@@ -7,8 +7,13 @@ if [ $# -lt 3 ] ; then
     echo -e "
 SYNOPSIS
     sudo bash series.sh PATH/TO/KUKUDY PATH/TO/TARGET_DIR COUNTRY_CODES
+    OR write the following to /etc/cron.d/kukudy
+
+DIR_K=$(pwd)
+
+41 01 20 10 * root bash \${DIR_K}/scripts/series.sh \${DIR_K} \${DIR_K}/pg US UK CA FR DE
 "
-    exit 0
+    exit 1
 fi
 
 DIR_K=$1
@@ -27,8 +32,9 @@ do
 
     SERVER_ID="$(/usr/bin/node ${DIR_K}/utils/getServersRecommendations.js $CCODE)"
     if [ $? == 1 ] ; then
-        exit 0
+        exit 1
     fi
+    echo -en "$(date -uIns)\t${SERVER_ID}\n" >> ${TARGET_DIR}/logs/checkpoint.txt
     CONF="${SERVER_ID}.nordvpn.com.udp.ovpn"
 
     /usr/sbin/openvpn                                  \
@@ -43,6 +49,8 @@ do
     /usr/bin/node ../updateEdges.js
 
     kill -15 $(cat ${DIR_N}/logs/pid.txt)
+
+    sleep 3
 done
 
 echo -en "$(date -uIns)\t#DONE\n" >> ${TARGET_DIR}/logs/checkpoint.txt
