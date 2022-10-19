@@ -3,7 +3,7 @@
 if [ $# != 2 ] ; then
     echo -e "
 SYNOPSIS
-    sudo bash connect.sh PATH_TO_KUKUDY COUNTRY_CODE
+    sudo bash connect.sh PATH/TO/KUKUDY COUNTRY_CODE
 "
     exit 0
 fi

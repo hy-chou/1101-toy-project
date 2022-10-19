@@ -1,7 +1,6 @@
 const { readdir, readFile } = require('node:fs/promises');
 
 const KAPI = require('./utils/API');
-const { reqVPNStatus } = require('./utils/reqVPNStatus');
 const { getTS, url2hostname, writeData } = require('./utils/utils');
 
 const getVideoEdgeHostname = (userLogin) => KAPI.reqPlaybackAccessToken(userLogin)
@@ -28,28 +27,24 @@ const updateEdges = async () => {
   const ts = getTS().replaceAll(':', '.');
   const edgsPath = `./edgs/${ts}.tsv`;
 
-  await reqVPNStatus()
-    .then((res) => `#${getTS()}\t${res.data.ip}\t${res.data.country_code}\n`)
-    .then((content) => writeData(edgsPath, content));
-
   await loadUserLogins()
-  // // bursty
-  // .then((userLogins) => userLogins.forEach(async (userLogin) => {
-  //   writeData(
-  //     edgsPath,
-  //     `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
-  //   );
-  // }));
+  // bursty
+    .then((userLogins) => userLogins.forEach(async (userLogin) => {
+      writeData(
+        edgsPath,
+        `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
+      );
+    }));
   // // single queue
-    .then((userLogins) => userLogins.reduce(
-      (lastPromise, userLogin) => lastPromise.then(async () => {
-        writeData(
-          edgsPath,
-          `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
-        );
-      }),
-      Promise.resolve(),
-    ));
+  //   .then((userLogins) => userLogins.reduce(
+  //     (lastPromise, userLogin) => lastPromise.then(async () => {
+  //       writeData(
+  //         edgsPath,
+  //         `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
+  //       );
+  //     }),
+  //     Promise.resolve(),
+  //   ));
 };
 
 if (require.main === module) {

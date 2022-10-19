@@ -1,34 +1,50 @@
 #!/bin/bash
 
-TARGET_DIR="$1"
-NUM_CHANNEL="$2"
-
-
 DIR_N="/etc/openvpn/nordvpn"
-TS="$(date -I)"
+
+
+if [ $# -lt 3 ] ; then
+    echo -e "
+SYNOPSIS
+    sudo bash series.sh PATH/TO/KUKUDY PATH/TO/TARGET_DIR COUNTRY_CODES
+"
+    exit 0
+fi
+
+DIR_K=$1
+TARGET_DIR=$2
+shift
+shift
+COUNTRY_CODES=$@
+
 
 mkdir -p ${TARGET_DIR}/logs
 cd ${TARGET_DIR}
 
-for _ in {1..5}
+for CCODE in ${COUNTRY_CODES}
 do
-    for SERVER_ID in "de923" "tw165" "uk1978" "us8926"
-    do
-        CONF="${SERVER_ID}.nordvpn.com.udp.ovpn"
+    echo -en "$(date -uIns)\t$CCODE\n" >> ${TARGET_DIR}/logs/checkpoint.txt
 
-        /usr/sbin/openvpn                                   \
-            --config         "${DIR_N}/ovpn_udp/${CONF}"      \
-            --auth-user-pass "${DIR_N}/auth.txt"              \
-            --writepid       "${DIR_N}/logs/${TS}.pid"        \
-            --log-append     "${TARGET_DIR}/logs/${TS}.log"   \
-            --daemon
+    SERVER_ID="$(/usr/bin/node ${DIR_K}/utils/getServersRecommendations.js $CCODE)"
+    if [ $? == 1 ] ; then
+        exit 0
+    fi
+    CONF="${SERVER_ID}.nordvpn.com.udp.ovpn"
 
-        /usr/bin/node ../utils/reqVPNStatus.js
-        /usr/bin/node ../updateStreams.js ${NUM_CHANNEL}
-        /usr/bin/node ../updateEdges.js
+    /usr/sbin/openvpn                                  \
+        --config         ${DIR_N}/ovpn_udp/${CONF}     \
+        --auth-user-pass ${DIR_N}/auth.txt             \
+        --writepid       ${DIR_N}/logs/pid.txt         \
+        --log-append     ${TARGET_DIR}/logs/$(date -uI).log  \
+        --daemon
 
-        kill -15 "$(cat ${DIR_N}/logs/${TS}.pid)"
+    /usr/bin/node ../utils/waitForVPN.js
+    /usr/bin/node ../updateStreams.js
+    /usr/bin/node ../updateEdges.js
 
-        sleep 3
-    done
+    kill -15 $(cat ${DIR_N}/logs/pid.txt)
 done
+
+echo -en "$(date -uIns)\t#DONE\n" >> ${TARGET_DIR}/logs/checkpoint.txt
+
+exit 0
