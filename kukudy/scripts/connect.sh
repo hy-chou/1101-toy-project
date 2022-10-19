@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [ $# != 1 ] ; then
+if [ $# != 2 ] ; then
     echo -e "
 SYNOPSIS
-    sudo bash connect.sh COUNTRY_CODE
+    sudo bash connect.sh PATH_TO_KUKUDY COUNTRY_CODE
 "
     exit 0
 fi
 
-DIR_K="/home/nslab-m06/Samuel/1101-toy-project/kukudy"
-SERVER_ID="$(/usr/bin/node ${DIR_K}/utils/getServersRecommendations.js $1)"
+DIR_K="$1"
+SERVER_ID="$(/usr/bin/node ${DIR_K}/utils/getServersRecommendations.js $2)"
 
 if [ $? == 1 ] ; then
     exit 0
