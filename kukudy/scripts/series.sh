@@ -3,21 +3,23 @@
 DIR_N="/etc/openvpn/nordvpn"
 
 
-if [ $# -lt 3 ] ; then
+if [ $# -lt 4 ] ; then
     echo -e "
 SYNOPSIS
-    sudo bash series.sh PATH/TO/KUKUDY PATH/TO/TARGET_DIR COUNTRY_CODES
+    sudo bash series.sh PATH/TO/KUKUDY PATH/TO/TARGET_DIR CHANNEL_COUNT COUNTRY_CODES
     OR write the following to /etc/cron.d/kukudy
 
 DIR_K=$(pwd)
 
-41 01 20 10 * root bash \${DIR_K}/scripts/series.sh \${DIR_K} \${DIR_K}/pg US UK CA FR DE
+25 21 25 10 * root bash \${DIR_K}/scripts/series.sh \${DIR_K} \${DIR_K}/k5018_200_USUKCAFRDE 200 US UK CA FR DE
 "
     exit 1
 fi
 
 DIR_K=$1
 TARGET_DIR=$2
+CHANNEL_COUNT=$3
+shift
 shift
 shift
 COUNTRY_CODES=$@
@@ -45,7 +47,7 @@ do
         --daemon
 
     /usr/bin/node ../utils/waitForVPN.js
-    /usr/bin/node ../updateStreams.js
+    /usr/bin/node ../updateStreams.js ${CHANNEL_COUNT}
     /usr/bin/node ../updateEdges.js
 
     kill -15 $(cat ${DIR_N}/logs/pid.txt)
