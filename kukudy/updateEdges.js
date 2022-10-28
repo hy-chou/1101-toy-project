@@ -1,7 +1,9 @@
 const { readdir, readFile } = require('node:fs/promises');
 
 const KAPI = require('./utils/API');
-const { getTS, url2hostname, writeData } = require('./utils/utils');
+const {
+  getTS, url2hostname, writeData, sleep,
+} = require('./utils/utils');
 
 const getVideoEdgeHostname = (userLogin) => KAPI.reqPlaybackAccessToken(userLogin)
   .then((res) => res.data.data.streamPlaybackAccessToken)
@@ -28,8 +30,10 @@ const updateEdges = async () => {
   const edgsPath = `./edgs/${ts}.tsv`;
 
   await loadUserLogins()
-  // bursty
-    .then((userLogins) => userLogins.forEach(async (userLogin) => {
+  // bursty 30 Hz
+    .then((userLogins) => userLogins.forEach(async (userLogin, index) => {
+      await sleep(index * 33);
+
       writeData(
         edgsPath,
         `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
