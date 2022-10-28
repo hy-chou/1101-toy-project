@@ -1,7 +1,7 @@
 const { readdir, readFile } = require('node:fs/promises');
 
 const KAPI = require('./utils/API');
-const { getTS, writeData } = require('./utils/utils');
+const { getTS, writeData, sleep } = require('./utils/utils');
 
 const getPAT = (userLogin) => KAPI.reqPlaybackAccessToken(userLogin)
   .then((res) => res.data.data.streamPlaybackAccessToken)
@@ -20,8 +20,9 @@ const getPATs = async () => {
   const patsPath = `./pats/${getTS().replaceAll(':', '.')}.tsv`;
 
   await loadUserLogins()
-  // bursty
-    .then((userLogins) => userLogins.forEach(async (userLogin) => {
+    .then((userLogins) => userLogins.forEach(async (userLogin, index) => {
+      await sleep(index * 33); // 30 Hz
+
       const ts = getTS();
       const sPAT = await getPAT(userLogin);
 
@@ -30,16 +31,6 @@ const getPATs = async () => {
         `${ts}\t${JSON.stringify(sPAT)}\t${userLogin}\n`,
       );
     }));
-  // // single queue
-  //   .then((userLogins) => userLogins.reduce(
-  //     (lastPromise, userLogin) => lastPromise.then(async () => {
-  //       writeData(
-  //         edgsPath,
-  //         `${getTS()}\t${await getVideoEdgeHostname(userLogin)}\t${userLogin}\n`,
-  //       );
-  //     }),
-  //     Promise.resolve(),
-  //   ));
 };
 
 if (require.main === module) {
