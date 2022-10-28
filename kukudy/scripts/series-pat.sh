@@ -47,10 +47,15 @@ do
         --daemon
 
     /usr/bin/node ../utils/waitForVPN.js
+    echo -en "$(date -uIns)\t${SERVER_ID} connected\n" >> ${TARGET_DIR}/logs/checkpoint.txt
+
     /usr/bin/node ../updateStreams.js ${CHANNEL_COUNT}
+    echo -en "$(date -uIns)\tuS done\n" >> ${TARGET_DIR}/logs/checkpoint.txt
     /usr/bin/node ../getPATs.js
+    echo -en "$(date -uIns)\tgetPATs done\n" >> ${TARGET_DIR}/logs/checkpoint.txt
 
     kill -15 $(cat ${DIR_N}/logs/pid.txt)
+    echo -en "$(date -uIns)\t${SERVER_ID} killed\n" >> ${TARGET_DIR}/logs/checkpoint.txt
 
     sleep 1m
 done
