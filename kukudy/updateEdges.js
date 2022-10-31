@@ -32,7 +32,7 @@ const updateEdges = async () => {
   await loadUserLogins()
   // bursty 30 Hz
     .then((userLogins) => userLogins.forEach(async (userLogin, index) => {
-      await sleep(index * 33);
+      await sleep(index * 50); // 20 Hz
 
       writeData(
         edgsPath,
