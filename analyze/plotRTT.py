@@ -2,8 +2,12 @@ from os import listdir
 
 import matplotlib.pyplot as plt
 
-# t0s = []
-rtts = []
+rtts = {
+    'reqStreams': [],
+    'reqPAT': [],
+    'reqUsherM3U8': [],
+    'reqGet': [],
+}
 
 for file in listdir('./logs/rtts/'):
     with open(f'./logs/rtts/{file}') as f:
@@ -11,18 +15,17 @@ for file in listdir('./logs/rtts/'):
     # for line in sorted(lines):
     for line in lines:
         line = line[:-1].split('\t')
-        if line[2] == 'reqPAT':
-            # t0 = datetime.fromisoformat(line[0][:-1])
-            rtt = float(line[1])
-            # t0s.append(t0)
-            rtts.append(rtt)
+        rtts[line[2]].append(float(line[1]))
 
-fig, ax = plt.subplots()
 
-ax.plot(rtts)
-ax.set_xlabel('line number')
-ax.set_ylabel('rtt')
-ax.set_ylim(0)
+for i, key in enumerate(rtts.keys()):
+    fig, ax = plt.subplots()
 
-plt.savefig('./plot.png', bbox_inches='tight')
-plt.close(fig)
+    ax.plot(rtts[key], '.', label=key)
+    ax.set_xlabel('line number')
+    ax.set_ylabel('rtt')
+    ax.set_ylim(0)
+    ax.legend()
+
+    plt.savefig(f'./plot{key}.png', bbox_inches='tight')
+    plt.close(fig)
