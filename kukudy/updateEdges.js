@@ -30,9 +30,9 @@ const updateEdges = async () => {
   const edgsPath = `./edgs/${ts}.tsv`;
 
   await loadUserLogins()
-  // bursty 30 Hz
+  // bursty 25 Hz
     .then((userLogins) => userLogins.forEach(async (userLogin, index) => {
-      await sleep(index * 50); // 20 Hz
+      await sleep(index * 40); // 25 Hz
 
       writeData(
         edgsPath,
