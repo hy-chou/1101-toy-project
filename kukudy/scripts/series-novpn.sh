@@ -31,8 +31,19 @@ echo -en "$(cat ../.env)\n"        >> ${TARGET_DIR}/logs/checkpoint.txt
 
 /usr/bin/node ../updateStreams.js ${CHANNEL_COUNT}
 echo -en "$(date -uIns)\tuS done\n" >> ${TARGET_DIR}/logs/checkpoint.txt
-/usr/bin/node ../updateEdges.js
-echo -en "$(date -uIns)\tuE done\n" >> ${TARGET_DIR}/logs/checkpoint.txt
+
+for ROUND in {0..19}
+do
+    /usr/bin/node ../updateEdges.js
+    echo -en "$(date -uIns)\tuE$ROUND done\n" >> ${TARGET_DIR}/logs/checkpoint.txt
+
+    sleep 30s
+
+    /usr/bin/node ../updateEdges.js
+    echo -en "$(date -uIns)\tuE$ROUND done\n" >> ${TARGET_DIR}/logs/checkpoint.txt
+
+    sleep 30s
+done
 
 echo -en "$(date -uIns)\t#DONE\n" >> ${TARGET_DIR}/logs/checkpoint.txt
 
