@@ -2,7 +2,7 @@ const KAPI = require('./utils/API');
 const { writeData, getTS } = require('./utils/utils');
 
 const getStreams = async (endPage = 1) => {
-  const strmPath = `./strm/${getTS().replaceAll(':', '.')}.txt`;
+  const strmPath = `./strm/${getTS().replaceAll(':', '.')}.json.txt`;
   const cursor = [''];
   const userLogins = new Set();
 
@@ -11,7 +11,7 @@ const getStreams = async (endPage = 1) => {
     await KAPI.reqStreams(cursor[0])
       .then((res) => res.data)
       .then(async (data) => {
-        await writeData(strmPath, JSON.stringify(data));
+        await writeData(strmPath, `${JSON.stringify(data)}\n`);
         data.data.forEach((stream) => userLogins.add(stream.user_login));
         cursor.pop();
         cursor.push(data.pagination.cursor);
