@@ -78,6 +78,24 @@ class KAPI {
     return kaxios.get(url, config);
   };
 
+  static reqSpecificStreams = (watchlist) => {
+    const url = 'https://api.twitch.tv/helix/streams';
+    const query = `?${watchlist.map((u) => `user_login=${u}`).join('&')}`;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+        'Client-Id': process.env.CLIENT_ID,
+      },
+
+      kukudy: {
+        type: 'reqSpecificStreams',
+        t1: getTS(),
+      },
+    };
+
+    return kaxios.get(url + query, config);
+  };
+
   static reqPlaybackAccessToken = (userLogin) => {
     const url = 'https://gql.twitch.tv/gql';
     const data = JSON.stringify({
