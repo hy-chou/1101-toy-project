@@ -35,7 +35,7 @@ for country in ['US', 'UK', 'CA', 'FR', 'DE']:
         ax.plot(range(i, len(lines) - w_size + 1, w_size // 2), ec_history, '|')
 
     ax.set_ylabel(f'# of unique hostnames in a size-{w_size} window')
-    ax.set_xlabel('# of top channels')
+    ax.set_xlabel('channel position')
     ax.set_title(f'k5072_{country}')
     plt.savefig(f'./k5072_{country}_edge-count.png', bbox_inches='tight')
     plt.close(fig)
