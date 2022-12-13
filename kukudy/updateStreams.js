@@ -5,8 +5,15 @@ const getStreams = async (endPage = 1) => {
   const strmPath = `./strm/${getTS().replaceAll(':', '.')}.json.txt`;
   const cursor = [''];
   const userLogins = new Set();
+  let p = 0;
+  let lastSize = -1;
+  let lastLastSize = -1;
 
-  for (let p = 0; p < endPage; p += 1) {
+  while (p < endPage && userLogins.size !== lastLastSize) {
+    p += 1;
+    lastLastSize = lastSize;
+    lastSize = userLogins.size;
+
     // eslint-disable-next-line no-await-in-loop
     await KAPI.reqStreams(cursor[0])
       .then((res) => res.data)
@@ -19,7 +26,7 @@ const getStreams = async (endPage = 1) => {
       .catch(async (err) => {
         await writeData(
           `./errs/${getTS().slice(0, 13)}.tsv`,
-          `${getTS()}\t@getStreams p${p}\t${err.message}\n`,
+          `${getTS()}\t@getStreams\t${err.message}\n`,
         );
       });
   }
