@@ -22,7 +22,8 @@ const loadUserLogins = async () => {
     .catch(() => []);
 
   return readFile(`./ulgs/${file}`, 'utf-8')
-    .then((content) => content.slice(0, -1).split('\n').reverse());
+    //.then((content) => content.slice(0, -1).split('\n').reverse());
+    .then((content) => content.slice(0, -1).split('\n'));
 };
 
 const updateEdges = async () => {
