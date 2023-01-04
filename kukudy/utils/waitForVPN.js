@@ -8,11 +8,17 @@ const reqVPNStatus = () => axios.get(
 );
 
 const waitForVPN = async () => {
+  let countdown = 0;
   let { data } = await reqVPNStatus();
 
-  while (!data.status) {
-    await sleep(3000);
+  while (!data.status && countdown < 10_000) {
+    await sleep(countdown);
     data = (await reqVPNStatus()).data;
+    countdown += 1000;
+  }
+
+  if (!data.status) {
+    process.exit(1);
   }
 
   await writeData(
