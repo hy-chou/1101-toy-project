@@ -43,6 +43,7 @@ if (require.main === module) {
       .filter((item) => item.locations[0].country.city.name === cityName))
     .then((serverList) => {
       if (serverList.length === 0) {
+	console.log(`Error:  empty server list`);
         process.exit(1);
       }
 
