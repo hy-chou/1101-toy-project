@@ -32,14 +32,15 @@ for file in countryFiles:
 edges = list(posOfEdges.keys())
 poses = list(posOfEdges.values())
 diffs = [np.diff(sorted(p)) for p in poses]
+# diffs = [diff[diff <= 100] for diff in diffs]
 
 
 fig, ax = plt.subplots()
 
-ax.hist(diffs, bins=100, range=(0, 100), stacked=True)
-# ax.hist(diffs, bins=100, stacked=True)
+ax.hist(diffs, bins=100, stacked=True)
 
-ax.set_xlabel('interval [0, 100] (reply)')
+# ax.set_xlabel('interval [0, 100] (reply)')
+ax.set_xlabel('interval (reply)')
 ax.set_ylabel('count')
 
 ax.set_title(
