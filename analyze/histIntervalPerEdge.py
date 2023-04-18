@@ -16,7 +16,7 @@ posOfEdges = dict()
 for file in countryFiles:
     with open(f'./info/{file}') as f:
         lines = f.readlines()
-    for line in lines[:1000]:
+    for line in lines:
         l = line[:-1].split('\t')
         if not l[2].startswith('{"'):  # error message
             continue
@@ -36,14 +36,14 @@ diffs = [np.diff(sorted(p)) for p in poses]
 
 fig, ax = plt.subplots()
 
-# ax.hist(diffs, bins=100, range=(0, 100), stacked=True)
-ax.hist(diffs, bins=100, stacked=True)
+ax.hist(diffs, bins=100, range=(0, 100), stacked=True)
+# ax.hist(diffs, bins=100, stacked=True)
 
-ax.set_xlabel('interval (reply)')
+ax.set_xlabel('interval [0, 100] (reply)')
 ax.set_ylabel('count')
 
 ax.set_title(
     f'histogram of Interval per Edge {datasetID}_{countryID}_{countryName}')
 
-fig.savefig(f'./histIpE_{datasetID}_{countryID}_{countryName}.png')
+fig.savefig(f'./histIpEr_{datasetID}_{countryID}_{countryName}.png')
 fig.clear()
