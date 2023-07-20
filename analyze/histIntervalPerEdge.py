@@ -1,19 +1,19 @@
 from json import loads
-from os import getcwd, listdir
-from os.path import basename
+from os import listdir
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-datasetID = basename(getcwd())
-countryID = 1
-countryName = 'ES'
-countryFiles = sorted(listdir('./info'))[24 * (countryID - 1):24 * countryID]
+files = sorted(listdir('./info'))
+datasetID = 'k5110'
+vpID = 1
+vpName = 'ES'
+vpFiles = files[24 * (vpID - 1):24 * vpID]
 
 pos = 0
 posOfEdges = dict()
 
-for file in countryFiles:
+for file in vpFiles:
     with open(f'./info/{file}') as f:
         lines = f.readlines()
     for line in lines:
@@ -43,8 +43,7 @@ ax.hist(diffs, bins=100, stacked=True)
 ax.set_xlabel('interval (reply)')
 ax.set_ylabel('count')
 
-ax.set_title(
-    f'histogram of Interval per Edge {datasetID}_{countryID}_{countryName}')
+ax.set_title(f'histogram of Interval per Edge {datasetID}_{vpID}_{vpName}')
 
-fig.savefig(f'./histIpEr_{datasetID}_{countryID}_{countryName}.png')
+fig.savefig(f'./histIpEr_{datasetID}_{vpID}_{vpName}.png')
 fig.clear()
