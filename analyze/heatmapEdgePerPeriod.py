@@ -31,6 +31,13 @@ for file in countryFiles:
         listofcounters[-1][edge] += 1
         pos += 1
 
+# remove low count points
+for i in range(len(listofcounters)):
+    for elem in list(listofcounters[i]):
+        if listofcounters[i][elem] < 10:
+            del listofcounters[i][elem]
+# remove low count points
+
 setofedges = set()
 for counter in listofcounters:
     for edge in counter.keys():
