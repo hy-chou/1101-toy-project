@@ -3,6 +3,7 @@ pg/
 try*/
 k[0-9]*/
 kukudy/nordvpn/
+.vscode/
 
 # # Python.gitignore
 
