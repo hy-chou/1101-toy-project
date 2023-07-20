@@ -30,18 +30,22 @@ posOfEdgesSorted.reverse()
 
 poses = [v for _, v in posOfEdgesSorted]
 diffs = [np.diff(sorted(p)) for p in poses]
-diffs = [diff[diff <= 100] for diff in diffs]
+diffs = [diff[diff <= 106] for diff in diffs]
 
 
 fig, ax = plt.subplots()
 
 ax.hist(diffs, bins=[i for i in range(101)], stacked=True)
+# ax.hist(diffs, bins=106, stacked=True)
+ax.set_xlim(-4, 104)
 
-ax.set_xlabel('interval [0, 100] (reply)')
+# ax.set_xlabel('interval [0, 100] (reply)')
+ax.set_xlabel('Interval in number of requests')
 ax.set_ylabel('count')
 
-fig.suptitle(f'histogram of Interval per Edge')
-ax.set_title(f'RR assign 62 edges to 100k streams (noise = {noise:.0f})')
+# fig.suptitle(f'histogram of Interval per Edge')
+# ax.set_title(f'RR assign 62 edges to 100k streams (noise = {noise:.0f})')
 
-fig.savefig(f'./histogramIntervalIdeal100k62_RR_{noise:.0f}.png')
+# fig.savefig(f'./histogramIntervalIdeal100k62_RR_{noise:.0f}.png')
+fig.savefig(f'./histogramIntervalIdeal100k62_SRR_{noise:.1f}.png')
 fig.clear()
