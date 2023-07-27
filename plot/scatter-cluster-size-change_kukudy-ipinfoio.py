@@ -1,4 +1,4 @@
-from math import floor
+from math import atan, pi
 
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
@@ -11,7 +11,7 @@ plt.rcParams.update(
 )
 
 title = ""
-x_label = "Size by IPInfo.io"
+x_label = "Size by IPinfo.io"
 y_label = "Size by Kukudy"
 iata_size = {
     "01_ES_mad01": [130, 133],
@@ -43,29 +43,38 @@ iata_size = {
     "13_FI_hel01": [31, 0],
     "13_FI_hel03": [37, 34],
 }
+size_min, size_max = 0, 206
 
 
 fig, ax = plt.subplots(figsize=(13, 13))
 
-# ax.imshow(table, vmin=z_min, vmax=z_max, cmap="viridis")
-ax.plot([0, 206], [0, 206], c="#888")
+# ax.set_xscale("log")
+# ax.set_yscale("log")
+
+ax.plot([size_min, size_max], [size_min, size_max], "--", c="#888")
 
 viridis = colormaps["viridis"]
 for iata, size in iata_size.items():
-    ii = ((int(iata[:2]) * 2 + 6.5) % 13) / 13
-    cface = viridis(ii)
-    Y = cface[0] * 0.2 + cface[1] * 0.7 + cface[2] * 0.1
-    ctext = "k"
-    if Y < 0.5:
-        ctext = "w"
-    ax.plot(
+    rotation = atan(size[1] / size[0]) * 180 / pi - 90
+    color = viridis(((int(iata[:2]) * 2 + 6.5) % 13) / 13)
+    Y = color[0] * 0.2 + color[1] * 0.7 + color[2] * 0.1
+    if Y > 0.5:
+        color = (
+            color[0] / Y * 0.5,
+            color[1] / Y * 0.5,
+            color[2] / Y * 0.5,
+            color[3],
+        )
+
+    ax.text(
         size[0],
         size[1],
-        marker=f"${iata[-5:]}$",
-        markersize=100,
-        c=cface,
-        alpha=0.3,
-        # label=color,
+        iata[-5:],
+        ha="center",
+        va="center",
+        rotation=rotation,
+        c=color,
+        size=30,
     )
 
 # ax.set_title(title)
@@ -73,6 +82,9 @@ ax.set_xlabel(x_label, labelpad=10.0)
 # ax.xaxis.set_label_position("top")
 # ax.tick_params(top=True, labeltop=True, bottom=False, labelbottom=False)
 ax.set_ylabel(y_label)
+
+ax.set_xlim(size_min, size_max)
+ax.set_ylim(size_min, size_max)
 
 # ax.spines[:].set_visible(False)
 
