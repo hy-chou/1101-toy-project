@@ -22,7 +22,7 @@ vpCountries = [
     "AT",  # k1004
 ]
 
-vpID = 13
+vpID = 0
 vpCountry = vpCountries[vpID - 1]
 # filenames = filenames[(vpID - 1) * 24 : vpID * 24]  # k5110
 
@@ -51,7 +51,7 @@ for filename in filenames:
     round2nodes[filename] = nodes
 
 
-unique_nodes = set()
+unique_nodes = set([""])
 for i in range(max_len):
     for filename, nodes in round2nodes.items():
         if i >= len(nodes):
