@@ -47,26 +47,22 @@ for i_round, filename in enumerate(filenames):
         node = info["NODE"]
         cluster = node[-5:]
         if info["NODE"] not in edge_counter:
-            first_seen[info["NODE"]] = i_line + 1
+            first_seen[info["NODE"]] = i_line + 1 - error_count
         if cluster not in cluster_counter:
-            first_seen[cluster] = i_line + 1
+            first_seen[cluster] = i_line + 1 - error_count
         edge_counter[info["NODE"]] += 1
         cluster_counter[cluster] += 1
 
     print(f"\n# round {i_round + 1}")
+    print(f"- filename: {filename}")
+    print(f"- error rate: {error_count/len(lines):.2f}")
+    print(f"- error count: {error_count}")
+    print(f"- total count: {len(lines)}")
 
-    print("# filename\terror rate\terror count\ttotal count")
-    print(
-        filename,
-        f"{error_count/len(lines):.2f}",
-        error_count,
-        len(lines),
-    )
-
-    print("# cluster\tcount\tfirst seen at")
+    print("## cluster\tcount\tfirst seen at")
     for cluster in sorted(cluster_counter.keys()):
         print(f"{cluster}\t{cluster_counter[cluster]}\t{first_seen[cluster]}")
 
-    print("# cluster\tedge\tcount\tfirst seen at")
+    print("## cluster\tedge\tcount\tfirst seen at")
     for edge in sorted(edge_counter.keys(), key=lambda x: x[-5:] + x[11:17]):
         print(f"{edge[-5:]}\t{edge[11:17]}\t{edge_counter[edge]}\t{first_seen[edge]}")
