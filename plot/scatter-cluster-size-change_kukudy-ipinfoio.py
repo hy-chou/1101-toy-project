@@ -11,8 +11,8 @@ plt.rcParams.update(
 )
 
 title = ""
-x_label = "Size by IPinfo.io"
-y_label = "Size by Kukudy"
+x_label = "Size from the DNS record"
+y_label = "Size from Kukudy"
 iata_size = {
     "01_ES_mad01": [130, 133],
     "01_ES_mad02": [23, 23],
