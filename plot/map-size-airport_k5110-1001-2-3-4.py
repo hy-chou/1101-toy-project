@@ -93,5 +93,5 @@ for iata, coords, size in iata_coords_size:
         zorder=300 - sum(size),
     )
 
-plt.savefig(f"map-cluster-size_k5110-1001-2-3-4.png", bbox_inches="tight")
+plt.savefig(f"map-size-airport_k5110-1001-2-3-4.png", bbox_inches="tight")
 plt.close(fig)
